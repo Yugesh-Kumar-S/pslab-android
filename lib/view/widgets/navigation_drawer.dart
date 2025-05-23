@@ -293,7 +293,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/faq',
-                        (route) => route.isFirst,
+                    (route) => route.isFirst,
                   );
                 }
               },

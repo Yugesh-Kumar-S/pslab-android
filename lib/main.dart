@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const InstrumentsScreen(),
         '/oscilloscope': (context) => const OscilloscopeScreen(),
         '/connectDevice': (context) => const ConnectDeviceScreen(),
-        '/faq': (context) =>  const FAQScreen(),
+        '/faq': (context) => const FAQScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/aboutUs': (context) => const AboutUsScreen(),
         '/softwareLicenses': (context) => const SoftwareLicensesScreen(),
