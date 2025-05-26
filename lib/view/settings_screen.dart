@@ -140,10 +140,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.of(context).pop();
                 },
                 child: Padding(
-                  padding: EdgeInsets.only(right: 20, bottom: 5),
+                  padding: const EdgeInsets.only(right: 20, bottom: 5),
                   child: Text(
                     cancel,
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
