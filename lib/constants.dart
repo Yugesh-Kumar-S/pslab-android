@@ -133,3 +133,8 @@ List<String> connectWithUs = [
   'Developers'
 ];
 String softwareLicenses = 'Software Licenses';
+String theme = 'Theme';
+String currentTheme = 'Current theme: ';
+String system = 'System';
+String light = 'Light';
+String dark = 'Dark';

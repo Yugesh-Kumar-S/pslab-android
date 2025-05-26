@@ -4,6 +4,7 @@ import 'package:pslab/colors.dart';
 import 'package:pslab/providers/board_state_provider.dart';
 import 'package:pslab/view/widgets/main_scaffold_widget.dart';
 import 'package:pslab/constants.dart';
+import 'package:pslab/providers/theme_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -26,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(export,
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -86,6 +87,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  void _showThemeSelectionDialog() {
+    final themeProvider = GetIt.instance.get<ThemeProvider>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: const Text(
+            'Theme',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          children: [
+            RadioListTile<ThemeMode>(
+              title: Text(system),
+              value: ThemeMode.system,
+              groupValue: themeProvider.themeMode,
+              activeColor: primaryRed,
+              onChanged: (ThemeMode? value) {
+                themeProvider.setThemeMode(value!);
+                Navigator.of(context).pop();
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: Text(light),
+              value: ThemeMode.light,
+              groupValue: themeProvider.themeMode,
+              activeColor: primaryRed,
+              onChanged: (ThemeMode? value) {
+                themeProvider.setThemeMode(value!);
+                Navigator.of(context).pop();
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: Text(dark),
+              value: ThemeMode.dark,
+              groupValue: themeProvider.themeMode,
+              activeColor: primaryRed,
+              onChanged: (ThemeMode? value) {
+                themeProvider.setThemeMode(value!);
+                Navigator.of(context).pop();
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(right: 20, bottom: 5),
+                  child: Text(
+                    cancel,
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
@@ -113,6 +181,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   GetIt.instance.get<BoardStateProvider>().exportFormat),
               onTap: () {
                 _showExportFormatDialog();
+              },
+            ),
+            const SizedBox(height: 10),
+            ListTile(
+              title: Text(theme),
+              subtitle: Text(currentTheme +
+                  GetIt.instance.get<ThemeProvider>().getThemeDisplayName()),
+              onTap: () {
+                _showThemeSelectionDialog();
               },
             ),
           ],
