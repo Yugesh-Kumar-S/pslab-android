@@ -38,6 +38,18 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           );
         }
         break;
+      case 10:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/gyroscope') {
+          Navigator.popUntil(context, ModalRoute.withName('/gyroscope'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/gyroscope',
+            (route) => route.isFirst,
+          );
+        }
+        break;
       default:
         break;
     }

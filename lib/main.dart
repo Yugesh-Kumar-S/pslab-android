@@ -5,6 +5,7 @@ import 'package:pslab/providers/locator.dart';
 import 'package:pslab/view/accelerometer_screen.dart';
 import 'package:pslab/view/connect_device_screen.dart';
 import 'package:pslab/view/faq_screen.dart';
+import 'package:pslab/view/gyroscope_screen.dart';
 import 'package:pslab/view/instruments_screen.dart';
 import 'package:pslab/view/oscilloscope_screen.dart';
 import 'package:pslab/view/settings_screen.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/aboutUs': (context) => const AboutUsScreen(),
         '/softwareLicenses': (context) => const SoftwareLicensesScreen(),
         '/accelerometer': (context) => const AccelerometerScreen(),
+        '/gyroscope': (context) => const GyroscopeScreen(),
       },
     );
   }
