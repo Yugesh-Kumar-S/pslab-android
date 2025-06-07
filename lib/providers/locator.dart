@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'theme_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pslab/communication/handler/android_comms_handler.dart';
 import 'package:pslab/communication/handler/base.dart';
@@ -23,4 +23,5 @@ void setupLocator() {
   getIt.registerLazySingleton<ScienceLab>(
       () => getIt.get<ScienceLabCommon>().getScienceLab());
   getIt.registerLazySingleton<BoardStateProvider>(() => BoardStateProvider());
+  getIt.registerSingleton<ThemeProvider>(ThemeProvider());
 }

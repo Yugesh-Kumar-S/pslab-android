@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:pslab/providers/board_state_provider.dart';
 import 'package:pslab/providers/locator.dart';
 import 'package:pslab/view/accelerometer_screen.dart';
+import 'package:pslab/view/Theme/theme.dart';
 import 'package:pslab/view/connect_device_screen.dart';
 import 'package:pslab/view/faq_screen.dart';
 import 'package:pslab/view/gyroscope_screen.dart';
@@ -11,18 +12,24 @@ import 'package:pslab/view/oscilloscope_screen.dart';
 import 'package:pslab/view/settings_screen.dart';
 import 'package:pslab/view/about_us_screen.dart';
 import 'package:pslab/view/software_licenses_screen.dart';
-
+import 'package:pslab/providers/theme_provider.dart';
 import 'constants.dart';
 
-void main() {
+Future<void> main() async {
   setupLocator();
   WidgetsFlutterBinding.ensureInitialized();
   getIt<BoardStateProvider>().initialize();
+  final themeProvider = getIt<ThemeProvider>();
+  await themeProvider.loadThemeMode();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<BoardStateProvider>(
           create: (context) => getIt<BoardStateProvider>(),
+        ),
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => getIt<ThemeProvider>(),
+          child: const MyApp(),
         ),
       ],
       child: const MyApp(),
@@ -38,10 +45,9 @@ class MyApp extends StatelessWidget {
     _preCacheImages(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.white,
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       initialRoute: '/',
       routes: {
         '/': (context) => const InstrumentsScreen(),
@@ -53,6 +59,7 @@ class MyApp extends StatelessWidget {
         '/softwareLicenses': (context) => const SoftwareLicensesScreen(),
         '/accelerometer': (context) => const AccelerometerScreen(),
         '/gyroscope': (context) => const GyroscopeScreen(),
+
       },
     );
   }

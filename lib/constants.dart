@@ -144,3 +144,9 @@ String maxValue = 'Max: ';
 String gyroscopeTitle = "Gyroscope";
 String gyroscopeAxisLabel = 'rad/s';
 String noData = 'No data available';
+String theme = 'Theme';
+String currentTheme = 'Current theme: ';
+String system = 'System';
+String light = 'Light';
+String dark = 'Dark';
+
