@@ -38,6 +38,18 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           );
         }
         break;
+      case 6:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/luxmeter') {
+          Navigator.popUntil(context, ModalRoute.withName('/luxmeter'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/luxmeter',
+            (route) => route.isFirst,
+          );
+        }
+        break;
       case 10:
         if (Navigator.canPop(context) &&
             ModalRoute.of(context)?.settings.name == '/gyroscope') {
