@@ -160,6 +160,7 @@ class _LuxMeterCardState extends State<LuxMeterCard> {
           child: Text(
             builtIn,
             style: TextStyle(
+              color: Colors.black,
               fontSize: titleFontSize,
               fontWeight: FontWeight.bold,
             ),
@@ -300,6 +301,7 @@ class _LuxMeterCardState extends State<LuxMeterCard> {
             child: Text(
               label,
               style: TextStyle(
+                color: Colors.black,
                 fontSize: fontSize,
                 fontWeight: FontWeight.w600,
               ),
@@ -316,6 +318,7 @@ class _LuxMeterCardState extends State<LuxMeterCard> {
               child: Text(
                 value.toStringAsFixed(2),
                 style: TextStyle(
+                  color: Colors.black,
                   fontSize: valueFontSize,
                   fontWeight: FontWeight.bold,
                 ),
