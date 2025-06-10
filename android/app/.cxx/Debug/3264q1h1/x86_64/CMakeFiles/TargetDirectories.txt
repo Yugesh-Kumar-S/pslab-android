@@ -1,2 +1,0 @@
-C:/Users/skybr/Documents/PS_LAB/pslab-android/android/app/.cxx/Debug/3264q1h1/x86_64/CMakeFiles/edit_cache.dir
-C:/Users/skybr/Documents/PS_LAB/pslab-android/android/app/.cxx/Debug/3264q1h1/x86_64/CMakeFiles/rebuild_cache.dir
