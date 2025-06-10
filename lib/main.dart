@@ -7,11 +7,13 @@ import 'package:pslab/view/connect_device_screen.dart';
 import 'package:pslab/view/faq_screen.dart';
 import 'package:pslab/view/gyroscope_screen.dart';
 import 'package:pslab/view/instruments_screen.dart';
+import 'package:pslab/view/luxmeter_screen.dart';
 import 'package:pslab/view/oscilloscope_screen.dart';
 import 'package:pslab/view/settings_screen.dart';
 import 'package:pslab/view/about_us_screen.dart';
 import 'package:pslab/view/software_licenses_screen.dart';
 import 'package:pslab/others/theme.dart';
+import 'package:pslab/view/soundmeter_screen.dart';
 import 'constants.dart';
 
 void main() {
@@ -52,6 +54,8 @@ class MyApp extends StatelessWidget {
         '/softwareLicenses': (context) => const SoftwareLicensesScreen(),
         '/accelerometer': (context) => const AccelerometerScreen(),
         '/gyroscope': (context) => const GyroscopeScreen(),
+        '/luxmeter': (context) => const LuxMeterScreen(),
+        '/soundmeter': (context) => const SoundMeterScreen(),
       },
     );
   }
