@@ -82,6 +82,7 @@ class _TimebaseTriggerState extends State<TimebaseTriggerWidget> {
                     Expanded(
                       child: SliderTheme(
                         data: const SliderThemeData(
+                          inactiveTrackColor: Colors.black,
                           trackHeight: 1,
                           thumbShape:
                               RoundSliderThumbShape(enabledThumbRadius: 6),
@@ -218,6 +219,7 @@ class _TimebaseTriggerState extends State<TimebaseTriggerWidget> {
                     Expanded(
                       child: SliderTheme(
                         data: const SliderThemeData(
+                          inactiveTrackColor: Colors.black,
                           trackHeight: 1,
                           thumbShape:
                               RoundSliderThumbShape(enabledThumbRadius: 6),

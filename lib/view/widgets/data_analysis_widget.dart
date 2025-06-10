@@ -269,6 +269,7 @@ class _DataAnalysisState extends State<DataAnalysisWidget> {
                           Expanded(
                             child: SliderTheme(
                               data: const SliderThemeData(
+                                inactiveTrackColor: Colors.black,
                                 trackHeight: 1,
                                 thumbShape: RoundSliderThumbShape(
                                     enabledThumbRadius: 6),
@@ -351,6 +352,7 @@ class _DataAnalysisState extends State<DataAnalysisWidget> {
                           Expanded(
                             child: SliderTheme(
                               data: const SliderThemeData(
+                                inactiveTrackColor: Colors.black,
                                 trackHeight: 1,
                                 thumbShape: RoundSliderThumbShape(
                                     enabledThumbRadius: 6),
