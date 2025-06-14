@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 import 'package:pslab/others/logger_service.dart';
-import 'package:noise_meter/noise_meter.dart';
+import 'package:flutter_audio_capture/flutter_audio_capture.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pslab/constants.dart';
 
 class SoundMeterStateProvider extends ChangeNotifier {
   double _currentDb = 0.0;
-  StreamSubscription<NoiseReading>? _noiseSubscription;
   Timer? _timeTimer;
   final List<double> _dbData = [];
   final List<double> _timeData = [];
   final List<FlSpot> dbChartData = [];
-  NoiseMeter? _noiseMeter;
+  FlutterAudioCapture? _audioCapture;
   double _startTime = 0;
   double _currentTime = 0;
   final int _maxLength = 50;
@@ -23,9 +21,12 @@ class SoundMeterStateProvider extends ChangeNotifier {
   double _dbSum = 0;
   int _dataCount = 0;
 
-  void initializeSensors() {
+  void initializeSensors() async {
     try {
-      _noiseMeter = NoiseMeter();
+      _audioCapture = FlutterAudioCapture();
+
+      await _audioCapture!.init();
+
       _startTime = DateTime.now().millisecondsSinceEpoch / 1000.0;
       _timeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         _currentTime =
@@ -33,25 +34,45 @@ class SoundMeterStateProvider extends ChangeNotifier {
         _updateData();
         notifyListeners();
       });
-      _noiseSubscription = _noiseMeter!.noise.listen(
-        (NoiseReading noiseReading) {
-          _currentDb = noiseReading.meanDecibel;
+
+      await _audioCapture!.start(
+        (Float32List audioData) {
+          _currentDb = _calculateDecibels(audioData);
           notifyListeners();
         },
-        onError: (error) {
+        (error) {
           logger.e(
             "$soundMeterError $error",
           );
         },
-        cancelOnError: true,
+        sampleRate: 44100,
+        bufferSize: 4096,
       );
     } catch (e) {
       logger.e("$soundMeterInitialError $e");
     }
   }
 
+  double _calculateDecibels(Float32List audioData) {
+    if (audioData.isEmpty) return 0.0;
+
+    double sum = 0;
+    for (double sample in audioData) {
+      sum += sample * sample;
+    }
+    double rms = sqrt(sum / audioData.length);
+
+    if (rms <= 0) return 0.0;
+
+    double dbFS = 20 * log(rms) / ln10;
+
+    double dbSPL = dbFS + 94;
+
+    return dbSPL.clamp(20.0, 120.0);
+  }
+
   void disposeSensors() {
-    _noiseSubscription?.cancel();
+    _audioCapture?.stop();
     _timeTimer?.cancel();
   }
 
