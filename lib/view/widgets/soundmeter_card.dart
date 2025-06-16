@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pslab/providers/soundmeter_state_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pslab/view/widgets/instruments_stats.dart';
+import 'package:pslab/constants.dart';
 
 class SoundMeterCard extends StatefulWidget {
   const SoundMeterCard({super.key});
@@ -53,7 +54,7 @@ class _SoundMeterCardState extends State<SoundMeterCard> {
                       maxValue: maxDb,
                       minValue: minDb,
                       avgValue: avgDb,
-                      unit: 'dB',
+                      unit: dB,
                     ),
                   ),
                   Expanded(
@@ -63,7 +64,7 @@ class _SoundMeterCardState extends State<SoundMeterCard> {
                         currentValue: currentDb,
                         minValue: 0,
                         maxValue: 200,
-                        unit: 'dB',
+                        unit: dB,
                         currentValueFontSize: dbValueFontSize),
                   ),
                 ],
