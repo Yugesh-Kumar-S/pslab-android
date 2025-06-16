@@ -54,7 +54,7 @@ class _SoundMeterCardState extends State<SoundMeterCard> {
                       maxValue: maxDb,
                       minValue: minDb,
                       avgValue: avgDb,
-                      unit: dB,
+                      unit: db,
                     ),
                   ),
                   Expanded(
@@ -64,7 +64,7 @@ class _SoundMeterCardState extends State<SoundMeterCard> {
                         currentValue: currentDb,
                         minValue: 0,
                         maxValue: 200,
-                        unit: dB,
+                        unit: db,
                         currentValueFontSize: dbValueFontSize),
                   ),
                 ],
