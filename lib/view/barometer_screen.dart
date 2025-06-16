@@ -23,7 +23,7 @@ class _BarometerScreenState extends State<BarometerScreen> {
             message,
             style: const TextStyle(color: Colors.white),
           ),
-          backgroundColor: Colors.grey,
+          backgroundColor: Colors.grey[700],
           duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,
         ),
@@ -65,6 +65,7 @@ class _BarometerScreenState extends State<BarometerScreen> {
       builder: (context, provider, child) {
         final screenWidth = MediaQuery.of(context).size.width;
         final cardMargin = screenWidth < 400 ? 8.0 : 16.0;
+        final cardPadding = screenWidth < 400 ? 2.0 : 5.0;
         List<FlSpot> spots = provider.getPressureChartData();
         double maxPressure = provider.getMaxPressure();
         double maxTime = provider.getMaxTime();
@@ -76,13 +77,21 @@ class _BarometerScreenState extends State<BarometerScreen> {
 
         return Container(
             margin: EdgeInsets.fromLTRB(cardMargin, 0, cardMargin, cardMargin),
-            padding: EdgeInsets.all(cardMargin),
+            padding: EdgeInsets.all(cardPadding),
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: _buildChart(screenWidth, maxPressure, maxTime, minTime,
-                timeInterval, spots, maxAltitude, minAltitude, altitudeInterval));
+            child: _buildChart(
+                screenWidth,
+                maxPressure,
+                maxTime,
+                minTime,
+                timeInterval,
+                spots,
+                maxAltitude,
+                minAltitude,
+                altitudeInterval));
       },
     );
   }
@@ -92,8 +101,8 @@ class _BarometerScreenState extends State<BarometerScreen> {
     final fontSize = screenWidth < 400
         ? 7.0
         : screenWidth < 600
-        ? 8.0
-        : 9.0;
+            ? 8.0
+            : 9.0;
     final style = TextStyle(
       color: Colors.white,
       fontSize: fontSize,
@@ -120,19 +129,19 @@ class _BarometerScreenState extends State<BarometerScreen> {
     );
   }
 
-  Widget altitudeTitleWidgets(double value, TitleMeta meta, double maxPressure) {
+  Widget altitudeTitleWidgets(
+      double value, TitleMeta meta, double maxPressure) {
     final screenWidth = MediaQuery.of(context).size.width;
     final fontSize = screenWidth < 400
         ? 7.0
         : screenWidth < 600
-        ? 8.0
-        : 9.0;
+            ? 8.0
+            : 9.0;
     final style = TextStyle(
-      color: Colors.yellow,
+      color: Colors.white,
       fontSize: fontSize,
     );
 
-    // Convert pressure value to altitude
     const double seaLevelPressureAtm = 1.0;
     const double temperatureK = 288.15;
     const double lapseRate = 0.0065;
@@ -144,14 +153,16 @@ class _BarometerScreenState extends State<BarometerScreen> {
 
     if (pressureAtm > 0) {
       altitude = (temperatureK / lapseRate) *
-          (1 - pow(pressureAtm / seaLevelPressureAtm, (gasConstant * lapseRate) / gravity));
+          (1 -
+              pow(pressureAtm / seaLevelPressureAtm,
+                  (gasConstant * lapseRate) / gravity));
     }
 
     String altitudeText;
     if (altitude < 1000) {
       altitudeText = '${altitude.round()}';
     } else {
-      altitudeText = '${(altitude / 1000).toStringAsFixed(1)}k';
+      altitudeText = altitude.toStringAsFixed(0);
     }
 
     return SideTitleWidget(
@@ -163,18 +174,25 @@ class _BarometerScreenState extends State<BarometerScreen> {
     );
   }
 
-  Widget _buildChart(double screenWidth, double maxPressure, double maxTime,
-      double minTime, double timeInterval, List<FlSpot> spots,
-      double maxAltitude, double minAltitude, double altitudeInterval) {
+  Widget _buildChart(
+      double screenWidth,
+      double maxPressure,
+      double maxTime,
+      double minTime,
+      double timeInterval,
+      List<FlSpot> spots,
+      double maxAltitude,
+      double minAltitude,
+      double altitudeInterval) {
     final chartFontSize = screenWidth < 400
         ? 8.0
         : screenWidth < 600
-        ? 9.0
-        : 10.0;
+            ? 9.0
+            : 10.0;
     final axisNameFontSize = screenWidth < 400 ? 9.0 : 10.0;
     final reservedSizeBottom = screenWidth < 400 ? 25.0 : 30.0;
-    final reservedSizeLeft = screenWidth < 400 ? 20.0 : 25.0;
-    final reservedSizeRight = screenWidth < 400 ? 30.0 : 35.0;
+    final reservedSizeLeft = screenWidth < 400 ? 29.0 : 32.0;
+    final reservedSizeRight = screenWidth < 400 ? 29.0 : 32.0;
 
     return LineChart(
       LineChartData(
@@ -232,17 +250,18 @@ class _BarometerScreenState extends State<BarometerScreen> {
           ),
           rightTitles: AxisTitles(
             axisNameWidget: Text(
-              'm',
+              meterUnit,
               style: TextStyle(
                 fontSize: axisNameFontSize,
-                color: Colors.yellow,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
             sideTitles: SideTitles(
               reservedSize: reservedSizeRight,
               showTitles: true,
-              getTitlesWidget: (value, meta) => altitudeTitleWidgets(value, meta, maxPressure),
+              getTitlesWidget: (value, meta) =>
+                  altitudeTitleWidgets(value, meta, maxPressure),
               interval: maxPressure > 0 ? (maxPressure / 5) : 0.2,
             ),
           ),

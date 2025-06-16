@@ -40,7 +40,7 @@ class BarometerStateProvider extends ChangeNotifier {
       });
 
       _barometerSubscription = barometerEventStream().listen(
-            (BarometerEvent event) {
+        (BarometerEvent event) {
           _currentPressure = event.pressure / 1013.25;
           _sensorAvailable = true;
           notifyListeners();
@@ -66,13 +66,13 @@ class BarometerStateProvider extends ChangeNotifier {
         errorString.contains('no sensor')) {
       _handleSensorNotAvailable();
     } else {
-      onSensorError?.call('Barometer sensor error occurred');
+      onSensorError?.call(barometerSensorError);
     }
   }
 
   void _handleSensorNotAvailable() {
     _sensorAvailable = false;
-    onSensorError?.call('Barometer sensor not available on this device');
+    onSensorError?.call(barometerNotAvailable);
   }
 
   void disposeSensors() {
@@ -112,18 +112,19 @@ class BarometerStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Convert pressure (atm) to altitude (meters) using barometric formula
   double _pressureToAltitude(double pressureAtm) {
-    const double seaLevelPressureAtm = 1.0; // 1 atm
-    const double temperatureK = 288.15; // Standard temperature in Kelvin (15°C)
-    const double lapseRate = 0.0065; // Temperature lapse rate K/m
-    const double gasConstant = 287.05; // Gas constant J/(kg·K)
-    const double gravity = 9.80665; // Gravity m/s²
+    const double seaLevelPressureAtm = 1.0;
+    const double temperatureK = 288.15;
+    const double lapseRate = 0.0065;
+    const double gasConstant = 287.05;
+    const double gravity = 9.80665;
 
     if (pressureAtm <= 0) return 0.0;
 
     double altitude = (temperatureK / lapseRate) *
-        (1 - pow(pressureAtm / seaLevelPressureAtm, (gasConstant * lapseRate) / gravity));
+        (1 -
+            pow(pressureAtm / seaLevelPressureAtm,
+                (gasConstant * lapseRate) / gravity));
 
     return altitude;
   }
@@ -134,15 +135,17 @@ class BarometerStateProvider extends ChangeNotifier {
   double getAveragePressure() =>
       _dataCount > 0 ? _pressureSum / _dataCount : 0.0;
 
-  // Altitude methods
   double getCurrentAltitude() => _pressureToAltitude(_currentPressure);
-  double getMinAltitude() => _pressureMin > 0 ? _pressureToAltitude(_pressureMax) : 0.0; // Max pressure = Min altitude
-  double getMaxAltitude() => _pressureMax > 0 ? _pressureToAltitude(_pressureMin) : 0.0; // Min pressure = Max altitude
+  double getMinAltitude() =>
+      _pressureMin > 0 ? _pressureToAltitude(_pressureMax) : 0.0;
+  double getMaxAltitude() =>
+      _pressureMax > 0 ? _pressureToAltitude(_pressureMin) : 0.0;
   double getAverageAltitude() => _pressureToAltitude(getAveragePressure());
 
-  // Chart altitude conversion methods
-  double getMaxAltitudeForChart() => _pressureMax > 0 ? _pressureToAltitude(0) : 10000.0;
-  double getMinAltitudeForChart() => _pressureMin > 0 ? _pressureToAltitude(_pressureMax * 1.1) : 0.0;
+  double getMaxAltitudeForChart() =>
+      _pressureMax > 0 ? _pressureToAltitude(0) : 10000.0;
+  double getMinAltitudeForChart() =>
+      _pressureMin > 0 ? _pressureToAltitude(_pressureMax * 1.1) : 0.0;
   double getAltitudeInterval() {
     double maxAlt = getMaxAltitudeForChart();
     return maxAlt > 0 ? (maxAlt / 5) : 2000;

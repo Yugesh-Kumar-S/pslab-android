@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pslab/providers/barometer_state_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pslab/view/widgets/instruments_stats.dart';
+import 'package:pslab/constants.dart';
 
 class BarometerCard extends StatefulWidget {
   const BarometerCard({super.key});
@@ -16,7 +17,7 @@ class _BarometerCardState extends State<BarometerCard> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 900;
     BarometerStateProvider provider =
-    Provider.of<BarometerStateProvider>(context);
+        Provider.of<BarometerStateProvider>(context);
     double currentPressure = provider.getCurrentPressure();
     double minPressure = provider.getMinPressure();
     double maxPressure = provider.getMaxPressure();
@@ -58,12 +59,13 @@ class _BarometerCardState extends State<BarometerCard> {
                             maxValue: maxPressure,
                             minValue: minPressure,
                             avgValue: avgPressure,
-                            unit: 'atm',
+                            unit: atm,
                           ),
                         ),
                         Expanded(
                           flex: 25,
-                          child: _buildAltitudeTile(currentAltitude, statFontSize),
+                          child:
+                              _buildAltitudeTile(currentAltitude, statFontSize),
                         ),
                       ],
                     ),
@@ -75,7 +77,7 @@ class _BarometerCardState extends State<BarometerCard> {
                         currentValue: currentPressure,
                         minValue: 0,
                         maxValue: 2,
-                        unit: 'atm',
+                        unit: atm,
                         currentValueFontSize: pressureValueFontSize),
                   ),
                 ],
@@ -89,7 +91,6 @@ class _BarometerCardState extends State<BarometerCard> {
 
   Widget _buildAltitudeTile(double altitude, double fontSize) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final valueFontSize = screenWidth < 400 ? 14.0 : 16.0;
     final padding = screenWidth < 400 ? 15.0 : 20.0;
 
     return Column(
@@ -98,7 +99,7 @@ class _BarometerCardState extends State<BarometerCard> {
       children: [
         Center(
           child: Text(
-            'Altitude (m)',
+            '$altitude ($meterUnit)',
             style: TextStyle(
               color: Colors.black,
               fontSize: fontSize,
@@ -118,7 +119,7 @@ class _BarometerCardState extends State<BarometerCard> {
               altitude.toStringAsFixed(2),
               style: TextStyle(
                 color: Colors.black,
-                fontSize: valueFontSize,
+                fontSize: fontSize,
                 fontWeight: FontWeight.bold,
               ),
             ),
