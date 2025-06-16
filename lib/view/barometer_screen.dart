@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pslab/constants.dart';
@@ -68,6 +70,9 @@ class _BarometerScreenState extends State<BarometerScreen> {
         double maxTime = provider.getMaxTime();
         double minTime = provider.getMinTime();
         double timeInterval = provider.getTimeInterval();
+        double maxAltitude = provider.getMaxAltitudeForChart();
+        double minAltitude = provider.getMinAltitudeForChart();
+        double altitudeInterval = provider.getAltitudeInterval();
 
         return Container(
             margin: EdgeInsets.fromLTRB(cardMargin, 0, cardMargin, cardMargin),
@@ -77,7 +82,7 @@ class _BarometerScreenState extends State<BarometerScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: _buildChart(screenWidth, maxPressure, maxTime, minTime,
-                timeInterval, spots));
+                timeInterval, spots, maxAltitude, minAltitude, altitudeInterval));
       },
     );
   }
@@ -87,8 +92,8 @@ class _BarometerScreenState extends State<BarometerScreen> {
     final fontSize = screenWidth < 400
         ? 7.0
         : screenWidth < 600
-            ? 8.0
-            : 9.0;
+        ? 8.0
+        : 9.0;
     final style = TextStyle(
       color: Colors.white,
       fontSize: fontSize,
@@ -115,16 +120,62 @@ class _BarometerScreenState extends State<BarometerScreen> {
     );
   }
 
+  Widget altitudeTitleWidgets(double value, TitleMeta meta, double maxPressure) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final fontSize = screenWidth < 400
+        ? 7.0
+        : screenWidth < 600
+        ? 8.0
+        : 9.0;
+    final style = TextStyle(
+      color: Colors.yellow,
+      fontSize: fontSize,
+    );
+
+    // Convert pressure value to altitude
+    const double seaLevelPressureAtm = 1.0;
+    const double temperatureK = 288.15;
+    const double lapseRate = 0.0065;
+    const double gasConstant = 287.05;
+    const double gravity = 9.80665;
+
+    double pressureAtm = value;
+    double altitude = 0.0;
+
+    if (pressureAtm > 0) {
+      altitude = (temperatureK / lapseRate) *
+          (1 - pow(pressureAtm / seaLevelPressureAtm, (gasConstant * lapseRate) / gravity));
+    }
+
+    String altitudeText;
+    if (altitude < 1000) {
+      altitudeText = '${altitude.round()}';
+    } else {
+      altitudeText = '${(altitude / 1000).toStringAsFixed(1)}k';
+    }
+
+    return SideTitleWidget(
+      meta: meta,
+      child: Text(
+        altitudeText,
+        style: style,
+      ),
+    );
+  }
+
   Widget _buildChart(double screenWidth, double maxPressure, double maxTime,
-      double minTime, double timeInterval, List<FlSpot> spots) {
+      double minTime, double timeInterval, List<FlSpot> spots,
+      double maxAltitude, double minAltitude, double altitudeInterval) {
     final chartFontSize = screenWidth < 400
         ? 8.0
         : screenWidth < 600
-            ? 9.0
-            : 10.0;
+        ? 9.0
+        : 10.0;
     final axisNameFontSize = screenWidth < 400 ? 9.0 : 10.0;
     final reservedSizeBottom = screenWidth < 400 ? 25.0 : 30.0;
     final reservedSizeLeft = screenWidth < 400 ? 20.0 : 25.0;
+    final reservedSizeRight = screenWidth < 400 ? 30.0 : 35.0;
+
     return LineChart(
       LineChartData(
         backgroundColor: Colors.black,
@@ -179,8 +230,21 @@ class _BarometerScreenState extends State<BarometerScreen> {
               interval: maxPressure > 0 ? (maxPressure / 5) : 0.2,
             ),
           ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
+          rightTitles: AxisTitles(
+            axisNameWidget: Text(
+              'm',
+              style: TextStyle(
+                fontSize: axisNameFontSize,
+                color: Colors.yellow,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            sideTitles: SideTitles(
+              reservedSize: reservedSizeRight,
+              showTitles: true,
+              getTitlesWidget: (value, meta) => altitudeTitleWidgets(value, meta, maxPressure),
+              interval: maxPressure > 0 ? (maxPressure / 5) : 0.2,
+            ),
           ),
         ),
         gridData: FlGridData(
