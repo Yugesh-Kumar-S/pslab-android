@@ -41,9 +41,7 @@ class LuxMeterStateProvider extends ChangeNotifier {
         _timeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
           _currentTime =
               (DateTime.now().millisecondsSinceEpoch / 1000.0) - _startTime;
-          if (_sensorAvailable) {
-            _updateData();
-          }
+          _updateData();
           notifyListeners();
         });
       }
