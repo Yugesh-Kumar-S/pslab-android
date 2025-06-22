@@ -36,7 +36,7 @@ class CompassProvider extends ChangeNotifier {
       onError: (error) {
         logger.e("$magnetometerError: $error");
       },
-      cancelOnError: true,
+      cancelOnError: false,
     );
 
     _accelerometerSubscription = accelerometerEventStream().listen(
@@ -48,7 +48,7 @@ class CompassProvider extends ChangeNotifier {
       onError: (error) {
         logger.e("$accelerometerError: $error");
       },
-      cancelOnError: true,
+      cancelOnError: false,
     );
   }
 
