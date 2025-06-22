@@ -6,15 +6,15 @@ class CommonScaffold extends StatefulWidget {
   final Widget body;
   final Key? scaffoldKey;
   final List<Widget>? actions;
-
+  final VoidCallback? onGuidePressed;
   const CommonScaffold({
     super.key,
     required this.body,
     required this.title,
     this.scaffoldKey,
     this.actions,
+    this.onGuidePressed,
   });
-
   @override
   State<StatefulWidget> createState() => _CommonScaffoldState();
 }
@@ -58,6 +58,14 @@ class _CommonScaffoldState extends State<CommonScaffold> {
           ),
         ),
         actions: [
+          if (widget.onGuidePressed != null)
+            IconButton(
+              onPressed: widget.onGuidePressed,
+              icon: const Icon(
+                Icons.help_outline,
+                color: Colors.white,
+              ),
+            ),
           if (widget.actions != null) ...widget.actions!,
         ],
       ),

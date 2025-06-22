@@ -1,0 +1,329 @@
+import 'package:flutter/material.dart';
+
+class InstrumentOverviewDrawer extends StatefulWidget {
+  final String instrumentName;
+  final List<Widget> content;
+  final VoidCallback? onHide;
+  const InstrumentOverviewDrawer({
+    Key? key,
+    required this.instrumentName,
+    required this.content,
+    this.onHide,
+  }) : super(key: key);
+  @override
+  State<InstrumentOverviewDrawer> createState() =>
+      _InstrumentOverviewDrawerState();
+}
+
+class _InstrumentOverviewDrawerState extends State<InstrumentOverviewDrawer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 1.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    _animationController.forward();
+  }
+
+  void _onVerticalDragEnd(DragEndDetails details) {
+    if (details.primaryVelocity != null) {
+      if (details.primaryVelocity! > 300) {
+        _hideDrawer();
+      } else if (details.primaryVelocity! < -300) {
+        _animationController.forward();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _hideDrawer() {
+    _animationController.reverse().then((_) {
+      if (widget.onHide != null) {
+        widget.onHide!();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black54,
+      child: GestureDetector(
+        onVerticalDragEnd: _onVerticalDragEnd,
+        onTap: _hideDrawer,
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: GestureDetector(
+                onTap: () {},
+                onVerticalDragEnd: _onVerticalDragEnd,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.7,
+                    minHeight: 200.0,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFD32F2F),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16.0),
+                            topRight: Radius.circular(16.0),
+                          ),
+                        ),
+                        child: SafeArea(
+                          bottom: false,
+                          child: GestureDetector(
+                            onTap: _hideDrawer,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0,
+                                vertical: 2.0,
+                              ),
+                              child: Column(
+                                children: const [
+                                  Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: Colors.white,
+                                    size: 20.0,
+                                  ),
+                                  Text(
+                                    'Hide Guide',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: LayoutBuilder(builder: (context, constraints) {
+                          final availableHeight =
+                              MediaQuery.of(context).size.height * 0.8 - 100;
+                          return SingleChildScrollView(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.instrumentName,
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 16.0),
+                                ...widget.content,
+                                const SizedBox(height: 20.0),
+                              ],
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class InstrumentIntroText extends StatelessWidget {
+  final String text;
+  final TextStyle? style;
+  const InstrumentIntroText({
+    Key? key,
+    required this.text,
+    this.style,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Text(
+        text,
+        style: style ??
+            const TextStyle(
+              fontSize: 16.0,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+      ),
+    );
+  }
+}
+
+class InstrumentBulletPoint extends StatelessWidget {
+  final String text;
+  final TextStyle? style;
+  const InstrumentBulletPoint({
+    Key? key,
+    required this.text,
+    this.style,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 6.0, right: 8.0),
+            child: Icon(
+              Icons.circle,
+              size: 6.0,
+              color: Colors.black54,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              text,
+              style: style ??
+                  const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InstrumentImage extends StatelessWidget {
+  final String imagePath;
+  final String? caption;
+  final double? height;
+  final BoxFit fit;
+  const InstrumentImage({
+    Key? key,
+    required this.imagePath,
+    this.caption,
+    this.height,
+    this.fit = BoxFit.contain,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          Container(
+            height: height ?? 200.0,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                imagePath,
+                fit: fit,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: Colors.grey,
+                        size: 48.0,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          if (caption != null) ...[
+            const SizedBox(height: 8.0),
+            Text(
+              caption!,
+              style: const TextStyle(
+                fontSize: 14.0,
+                color: Colors.black54,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class InstrumentSection extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+  const InstrumentSection({
+    Key? key,
+    required this.title,
+    required this.children,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12.0),
+          ...children,
+        ],
+      ),
+    );
+  }
+}

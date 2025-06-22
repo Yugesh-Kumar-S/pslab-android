@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pslab/constants.dart';
 import 'package:pslab/providers/luxmeter_state_provider.dart';
+import 'package:pslab/view/widgets/guide_widget.dart';
 import 'package:pslab/view/widgets/common_scaffold_widget.dart';
 import 'package:pslab/view/widgets/luxmeter_card.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -13,6 +14,35 @@ class LuxMeterScreen extends StatefulWidget {
 }
 
 class _LuxMeterScreenState extends State<LuxMeterScreen> {
+  bool _showGuide = false;
+  void _showInstrumentGuide() {
+    setState(() {
+      _showGuide = true;
+    });
+  }
+
+  void _hideInstrumentGuide() {
+    setState(() {
+      _showGuide = false;
+    });
+  }
+
+  List<Widget> _getSoundMeterContent() {
+    return [
+      const InstrumentIntroText(
+        text: 'Sound meter Introduction',
+      ),
+      const InstrumentImage(
+        imagePath: 'assets/images/bh1750_schematic.png',
+        height: 250.0,
+        caption: 'PSLab device connection diagram',
+      ),
+      const InstrumentIntroText(
+        text: 'To measure the loudness in the environment in decibel(dB)',
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -21,23 +51,32 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
           create: (_) => LuxMeterStateProvider()..initializeSensors(),
         ),
       ],
-      child: CommonScaffold(
-        title: luxMeterTitle,
-        body: SafeArea(
-          child: Column(
-            children: [
-              const Expanded(
-                flex: 45,
-                child: LuxMeterCard(),
-              ),
-              Expanded(
-                flex: 55,
-                child: _buildChartSection(),
-              ),
-            ],
+      child: Stack(children: [
+        CommonScaffold(
+          title: luxMeterTitle,
+          onGuidePressed: _showInstrumentGuide,
+          body: SafeArea(
+            child: Column(
+              children: [
+                const Expanded(
+                  flex: 45,
+                  child: LuxMeterCard(),
+                ),
+                Expanded(
+                  flex: 55,
+                  child: _buildChartSection(),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        if (_showGuide)
+          InstrumentOverviewDrawer(
+            instrumentName: 'Sound Meter',
+            content: _getSoundMeterContent(),
+            onHide: _hideInstrumentGuide,
+          ),
+      ]),
     );
   }
 
