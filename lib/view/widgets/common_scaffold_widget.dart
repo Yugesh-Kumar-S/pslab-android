@@ -62,7 +62,7 @@ class _CommonScaffoldState extends State<CommonScaffold> {
             IconButton(
               onPressed: widget.onGuidePressed,
               icon: const Icon(
-                Icons.help_outline,
+                Icons.info,
                 color: Colors.white,
               ),
             ),
