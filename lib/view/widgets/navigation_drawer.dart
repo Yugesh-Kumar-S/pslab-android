@@ -67,7 +67,7 @@ class _NavDrawerState extends State<NavDrawer> {
                     widget.selectedIndex == 0 ? selectedMenuColor : menuColor,
               ),
               title: Text(
-                instrumentMenu,
+                instrumentsTitle,
                 style: TextStyle(
                   color: widget.selectedIndex == 0
                       ? selectedMenuColor
@@ -124,7 +124,7 @@ class _NavDrawerState extends State<NavDrawer> {
                     widget.selectedIndex == 2 ? selectedMenuColor : menuColor,
               ),
               title: Text(
-                connectDeviceMenu,
+                connectDevice,
                 style: TextStyle(
                   color: widget.selectedIndex == 2
                       ? selectedMenuColor
@@ -178,7 +178,7 @@ class _NavDrawerState extends State<NavDrawer> {
                     widget.selectedIndex == 4 ? selectedMenuColor : menuColor,
               ),
               title: Text(
-                settingsMenu,
+                settings,
                 style: TextStyle(
                   color: widget.selectedIndex == 4
                       ? selectedMenuColor
@@ -210,7 +210,7 @@ class _NavDrawerState extends State<NavDrawer> {
                     widget.selectedIndex == 5 ? selectedMenuColor : menuColor,
               ),
               title: Text(
-                aboutUsMenu,
+                aboutUs,
                 style: TextStyle(
                   color: widget.selectedIndex == 5
                       ? selectedMenuColor
