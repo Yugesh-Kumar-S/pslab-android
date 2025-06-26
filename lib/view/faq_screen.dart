@@ -103,9 +103,6 @@ class FAQScreen extends StatelessWidget {
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 A,
-                style: TextStyle(
-                  color: blackTextColor,
-                ),
               ),
               const SizedBox(
                 width: 10,
@@ -113,9 +110,6 @@ class FAQScreen extends StatelessWidget {
               Flexible(
                 child: Text(
                   faq.answer,
-                  style: TextStyle(
-                    color: blackTextColor,
-                  ),
                 ),
               ),
             ]),
