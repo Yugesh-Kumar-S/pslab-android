@@ -7,6 +7,8 @@ import 'package:pslab/view/widgets/guide_widget.dart';
 import 'package:pslab/view/widgets/soundmeter_card.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../theme/colors.dart';
+
 class SoundMeterScreen extends StatefulWidget {
   const SoundMeterScreen({super.key});
   @override
@@ -94,8 +96,8 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
         return Container(
           margin: EdgeInsets.fromLTRB(cardMargin, 0, cardMargin, cardMargin),
           padding: EdgeInsets.all(cardPadding),
-          decoration: const BoxDecoration(
-            color: Colors.black,
+          decoration: BoxDecoration(
+            color: chartBackgroundColor,
             borderRadius: BorderRadius.zero,
           ),
           child:
@@ -113,7 +115,7 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
             ? 8.0
             : 9.0;
     final style = TextStyle(
-      color: Colors.white,
+      color: chartTextColor,
       fontSize: fontSize,
     );
     String timeText;
@@ -153,7 +155,7 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
       padding: const EdgeInsets.only(right: 20.0),
       child: LineChart(
         LineChartData(
-          backgroundColor: Colors.black,
+          backgroundColor: chartBackgroundColor,
           titlesData: FlTitlesData(
             show: true,
             topTitles: AxisTitles(
@@ -163,7 +165,7 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
                   timeAxisLabel,
                   style: TextStyle(
                     fontSize: axisNameFontSize,
-                    color: Colors.white,
+                    color: chartTextColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -183,7 +185,7 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
                 db,
                 style: TextStyle(
                   fontSize: axisNameFontSize,
-                  color: Colors.white,
+                  color: chartTextColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -196,7 +198,7 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
                     child: Text(
                       value.toInt().toString(),
                       style: TextStyle(
-                        color: Colors.white,
+                        color: chartTextColor,
                         fontSize: chartFontSize,
                       ),
                     ),
@@ -219,11 +221,11 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
           ),
           borderData: FlBorderData(
             show: true,
-            border: const Border(
-              bottom: BorderSide(color: Colors.white38),
-              left: BorderSide(color: Colors.white38),
-              top: BorderSide(color: Colors.white38),
-              right: BorderSide(color: Colors.white38),
+            border: Border(
+              bottom: BorderSide(color: chartBorderColor),
+              left: BorderSide(color: chartBorderColor),
+              top: BorderSide(color: chartBorderColor),
+              right: BorderSide(color: chartBorderColor),
             ),
           ),
           minY: 0,
@@ -235,15 +237,15 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
             horizontalLines: [
               HorizontalLine(
                 y: 100,
-                color: Colors.red,
+                color: soundMeterSafeLimitColor,
                 strokeWidth: 1,
                 dashArray: [5, 5],
                 label: HorizontalLineLabel(
                   show: true,
                   alignment: Alignment.topRight,
                   padding: const EdgeInsets.only(right: 5, bottom: 5),
-                  style: const TextStyle(
-                    color: Colors.red,
+                  style: TextStyle(
+                    color: soundMeterSafeLimitColor,
                     fontSize: 12,
                   ),
                   labelResolver: (line) => '"Dangerous"',
@@ -255,7 +257,7 @@ class _SoundMeterScreenState extends State<SoundMeterScreen> {
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              color: Colors.cyan,
+              color: chartLineColor,
               barWidth: screenWidth < 400 ? 1.5 : 2.0,
               isStrokeCapRound: true,
               dotData: const FlDotData(show: false),
