@@ -41,9 +41,9 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
         SnackBar(
           content: Text(
             message,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: snackBarContentColor),
           ),
-          backgroundColor: Colors.grey[700],
+          backgroundColor: snackBarBackgroundColor,
           duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,
         ),
@@ -231,7 +231,7 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              color: Colors.cyan,
+              color: chartLineColor,
               barWidth: screenWidth < 400 ? 1.5 : 2.0,
               isStrokeCapRound: true,
               dotData: const FlDotData(show: false),
