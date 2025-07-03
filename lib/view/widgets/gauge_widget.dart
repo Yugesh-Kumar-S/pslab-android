@@ -102,7 +102,7 @@ class GaugeWidget extends StatelessWidget {
         pointer: GaugePointer.needle(
           width: (size * 0.09).clamp(4.0, 20.0),
           height: (size * 0.35).clamp(15.0, 80.0),
-          borderRadius: (size * 0.03).clamp(2.0, 12.0),
+          borderRadius: ((size * 0.09).clamp(4.0, 20.0)) / 2,
           color: gaugeNeedleColor,
         ),
       ),
