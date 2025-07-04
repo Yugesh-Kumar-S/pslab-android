@@ -267,6 +267,10 @@ String soundMeterError = 'Sound sensor error:';
 String soundMeterInitialError = 'Sound sensor initialization error:';
 String db = 'dB';
 String soundMeterTitle = 'Sound Meter';
+String noLightSensor = "Device does not have a light sensor";
+String lightSensorErrorDetails = "Light sensor error details:";
+String lightSensorErrorLog =
+    "No light sensor data received - sensor may not be available";
 String playBackSummary = 'Playback Summary';
 String servo = 'Servo:';
 String percentage = '%';
