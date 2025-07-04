@@ -4,6 +4,7 @@ import 'package:pslab/providers/board_state_provider.dart';
 import 'package:pslab/providers/locator.dart';
 import 'package:pslab/providers/luxmeter_config_provider.dart';
 import 'package:pslab/view/accelerometer_screen.dart';
+import 'package:pslab/view/barometer_screen.dart';
 import 'package:pslab/view/connect_device_screen.dart';
 import 'package:pslab/view/faq_screen.dart';
 import 'package:pslab/view/gyroscope_screen.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
         '/gyroscope': (context) => const GyroscopeScreen(),
         '/roboticArm': (context) => const RoboticArmScreen(),
         '/luxmeter': (context) => const LuxMeterScreen(),
+        '/barometer': (context) => const BarometerScreen(),
         '/soundmeter': (context) => const SoundMeterScreen(),
       },
     );

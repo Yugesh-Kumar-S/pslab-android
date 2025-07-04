@@ -75,7 +75,6 @@ class StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final valueFontSize = screenWidth < 400 ? 14.0 : 16.0;
     final padding = screenWidth < 400 ? 15.0 : 20.0;
     return Flexible(
       child: Column(
@@ -104,7 +103,7 @@ class StatItem extends StatelessWidget {
                 value.toStringAsFixed(2),
                 style: TextStyle(
                   color: cardContentColor,
-                  fontSize: valueFontSize,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
