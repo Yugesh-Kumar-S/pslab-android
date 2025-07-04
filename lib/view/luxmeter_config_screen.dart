@@ -65,9 +65,9 @@ class _LuxMeterConfigScreenState extends State<LuxMeterConfigScreen> {
                           SnackBar(
                               content: Text(
                                 updatePeriodErrorMessage,
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: snackBarContentColor),
                               ),
-                              backgroundColor: Colors.grey[700]),
+                              backgroundColor: snackBarBackgroundColor),
                         );
                       }
                     },
@@ -88,9 +88,9 @@ class _LuxMeterConfigScreenState extends State<LuxMeterConfigScreen> {
                           SnackBar(
                               content: Text(
                                 highLimitErrorMessage,
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: snackBarContentColor),
                               ),
-                              backgroundColor: Colors.grey[700]),
+                              backgroundColor: snackBarBackgroundColor),
                         );
                       }
                     },
