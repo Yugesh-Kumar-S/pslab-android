@@ -67,6 +67,13 @@ class _LuxMeterConfigScreenState extends State<LuxMeterConfigScreen> {
           );
         }),
         backgroundColor: primaryRed,
+        title: Text(
+          luxmeterConfigurations,
+          style: TextStyle(
+            color: appBarContentColor,
+            fontSize: 15,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Padding(
