@@ -45,31 +45,59 @@ class _ThermometerCardState extends State<ThermometerCard> {
           padding: EdgeInsets.all(cardPadding),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return Row(
-                children: [
-                  Expanded(
-                    flex: screenWidth < 500 ? 40 : 35,
-                    child: Instrumentstats(
-                      titleFontSize: titleFontSize,
-                      statFontSize: statFontSize,
-                      maxValue: maxTemp,
-                      minValue: minTemp,
-                      avgValue: avgTemp,
-                      unit: celsius,
+              if (isLargeScreen) {
+                return Column(
+                  children: [
+                    Expanded(
+                      flex: 40,
+                      child: GaugeWidget(
+                          gaugeSize: gaugeSize,
+                          currentValue: currentTemp,
+                          minValue: -40,
+                          maxValue: 125,
+                          unit: celsius,
+                          currentValueFontSize: tempValueFontSize),
                     ),
-                  ),
-                  Expanded(
-                    flex: screenWidth < 500 ? 60 : 65,
-                    child: GaugeWidget(
-                        gaugeSize: gaugeSize,
-                        currentValue: currentTemp,
-                        minValue: -40,
-                        maxValue: 125,
+                    Expanded(
+                      flex: 60,
+                      child: Instrumentstats(
+                        titleFontSize: titleFontSize,
+                        statFontSize: statFontSize,
+                        maxValue: maxTemp,
+                        minValue: minTemp,
+                        avgValue: avgTemp,
                         unit: celsius,
-                        currentValueFontSize: tempValueFontSize),
-                  ),
-                ],
-              );
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return Row(
+                  children: [
+                    Expanded(
+                      flex: screenWidth < 500 ? 40 : 35,
+                      child: Instrumentstats(
+                        titleFontSize: titleFontSize,
+                        statFontSize: statFontSize,
+                        maxValue: maxTemp,
+                        minValue: minTemp,
+                        avgValue: avgTemp,
+                        unit: celsius,
+                      ),
+                    ),
+                    Expanded(
+                      flex: screenWidth < 500 ? 60 : 65,
+                      child: GaugeWidget(
+                          gaugeSize: gaugeSize,
+                          currentValue: currentTemp,
+                          minValue: -40,
+                          maxValue: 125,
+                          unit: celsius,
+                          currentValueFontSize: tempValueFontSize),
+                    ),
+                  ],
+                );
+              }
             },
           ),
         ),

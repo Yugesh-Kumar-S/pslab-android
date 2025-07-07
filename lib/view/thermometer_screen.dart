@@ -94,19 +94,36 @@ class _ThermometerScreenState extends State<ThermometerScreen> {
                 title: thermometerTitle,
                 onGuidePressed: _showInstrumentGuide,
                 body: SafeArea(
-                  child: Column(
-                    children: [
-                      const Expanded(
-                        flex: 45,
-                        child: ThermometerCard(),
-                      ),
-                      Expanded(
-                        flex: 55,
-                        child: _buildChartSection(),
-                      ),
-                    ],
-                  ),
-                ),
+                    child: LayoutBuilder(builder: (context, constraints) {
+                  final isLargeScreen = constraints.maxWidth > 900;
+                  if (isLargeScreen) {
+                    return Row(
+                      children: [
+                        const Expanded(
+                          flex: 35,
+                          child: ThermometerCard(),
+                        ),
+                        Expanded(
+                          flex: 65,
+                          child: _buildChartSection(),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        const Expanded(
+                          flex: 45,
+                          child: ThermometerCard(),
+                        ),
+                        Expanded(
+                          flex: 55,
+                          child: _buildChartSection(),
+                        ),
+                      ],
+                    );
+                  }
+                })),
               ),
               if (_showGuide)
                 InstrumentOverviewDrawer(
