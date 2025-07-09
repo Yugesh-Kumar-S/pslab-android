@@ -368,7 +368,7 @@ String shareAppMenu = 'Share App';
 String privacyPolicyMenu = 'Privacy Policy';
 String thermometerTitle = 'Thermometer';
 String thermometerIntro =
-    'Thermometer instrument is used to measure ambient temprature. It can be measured using inbuilt ambient temprature sensor or through SHT21.';
+    'Thermometer instrument is used to measure ambient temperature. It can be measured using inbuilt ambient temperature sensor or through SHT21.';
 String celsius = '°C';
 String temperatureSensorError = 'Temperature sensor error:';
 String temperatureSensorInitialError =
