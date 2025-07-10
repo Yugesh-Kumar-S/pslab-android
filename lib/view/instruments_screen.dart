@@ -40,14 +40,14 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           );
         }
         break;
-      case 7:
+      case 2:
         if (Navigator.canPop(context) &&
-            ModalRoute.of(context)?.settings.name == '/accelerometer') {
-          Navigator.popUntil(context, ModalRoute.withName('/accelerometer'));
+            ModalRoute.of(context)?.settings.name == '/logicAnalyzer') {
+          Navigator.popUntil(context, ModalRoute.withName('/logicAnalyzer'));
         } else {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            '/accelerometer',
+            '/logicAnalyzer',
             (route) => route.isFirst,
           );
         }
@@ -60,6 +60,30 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           Navigator.pushNamedAndRemoveUntil(
             context,
             '/luxmeter',
+            (route) => route.isFirst,
+          );
+        }
+        break;
+      case 7:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/accelerometer') {
+          Navigator.popUntil(context, ModalRoute.withName('/accelerometer'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/accelerometer',
+            (route) => route.isFirst,
+          );
+        }
+        break;
+      case 8:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/barometer') {
+          Navigator.popUntil(context, ModalRoute.withName('/barometer'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/barometer',
             (route) => route.isFirst,
           );
         }

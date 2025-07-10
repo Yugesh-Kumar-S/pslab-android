@@ -87,6 +87,25 @@ List<String> channelEntries = [
 ];
 
 String multimeter = 'Multimeter';
+String defaultValue = '0.00';
+String unitVolts = 'Volts';
+List<String> knobMarker = [
+  'CH1',
+  'CAP',
+  'VOL',
+  'RES',
+  'CAP',
+  'LA1',
+  'LA2',
+  'LA3',
+  'LA4',
+  'CH3',
+  'CH2',
+];
+String voltage = 'Voltage';
+String unitHz = 'Hz';
+String countPulse = 'Count Pulse';
+String measure = 'Measure';
 String connectDevice = 'Connect Device';
 String deviceConnected = 'Device Connected Successfully';
 String noDeviceFound = 'No USB Device Found';
@@ -101,6 +120,33 @@ String bluetooth = 'BLUETOOTH';
 String wifi = 'WIFI';
 String whatisPslab = 'What is PSLab Device?';
 String pslabUrl = 'https://pslab.io';
+
+String logicAnalyzer = 'Logic Analyzer';
+String channelSelection = 'Channel Selection';
+String logicAnalyzerAxisTitle = 'Time (\u00B5s)';
+String noChartDataAvailable = 'No chart data available';
+String noOfChannelsOne = '1';
+String noOfChannelsTwo = '2';
+String noOfChannelsThree = '3';
+String noOfChannelsFour = '4';
+String channelLA1 = 'LA1';
+String channelLA2 = 'LA2';
+String channelLA3 = 'LA3';
+String channelLA4 = 'LA4';
+List<String> channelNames = [
+  channelLA1,
+  channelLA2,
+  channelLA3,
+  channelLA4,
+];
+List<String> analysisOptions = [
+  'EVERY EDGE',
+  'EVERY FALLING EDGE',
+  'EVERY RISING EDGE',
+  'EVERY FOURTH RISING EDGE',
+  'DISABLED'
+];
+String analyze = 'ANALYZE';
 
 String settings = 'Settings';
 String start = 'Auto Start';
@@ -217,7 +263,7 @@ String degreeSymbol = '°';
 String enterAngleRange = 'Enter angle (0 - 360)';
 String errorCannotBeEmpty = 'Cannot be empty';
 String servoValidNumberRange = 'Please enter a valid number between 0 and 360';
-String ok = 'Ok';
+String ok = 'OK';
 String roboticArm = 'Robotic Arm';
 String play = 'Play';
 String pause = 'Pause';
@@ -260,10 +306,21 @@ String lx = 'Lx';
 String maxScaleError = 'Max Scale';
 String lightSensorError = 'Light sensor error:';
 String lightSensorInitialError = 'Failed to initialize light sensor:';
+String barometerTitle = 'Barometer';
+String atm = 'atm';
+String barometerSensorInitialError = 'Failed to initialize barometer sensor:';
+String barometerSensorError = 'Barometer sensor error occurred';
+String barometerNotAvailable = 'Barometer sensor not available on this device';
+String meterUnit = 'm';
+String altitudeLabel = 'Altitude';
 String soundMeterError = 'Sound sensor error:';
 String soundMeterInitialError = 'Sound sensor initialization error:';
 String db = 'dB';
 String soundMeterTitle = 'Sound Meter';
+String noLightSensor = "Device does not have a light sensor";
+String lightSensorErrorDetails = "Light sensor error details:";
+String lightSensorErrorLog =
+    "No light sensor data received - sensor may not be available";
 String playBackSummary = 'Playback Summary';
 String servo = 'Servo:';
 String percentage = '%';
@@ -342,3 +399,29 @@ String shareAppMenu = 'Share App';
 String privacyPolicyMenu = 'Privacy Policy';
 String shopLink = 'https://pslab.io/shop/';
 String shopError = 'Could not open the shop link';
+String showLuxmeterConfig = 'Lux Meter Configurations';
+String luxmeterConfigurations = 'Lux Meter Configurations';
+String updatePeriod = 'Update Period';
+String updatePeriodHint =
+    'Please provide time interval at which data will be updated (100 ms to 1000 ms)';
+String highLimit = 'High Limit';
+String highLimitHint =
+    'Please provide the maximum limit of lux value to be recorded (10 Lx to 10000 Lx)';
+String sensorGain = 'Sensor Gain';
+String sensorGainHint = 'Please set gain of the sensor';
+String locationData = 'Include Location Data';
+String locationDataHint = 'Include the location data in the logged file';
+String activeSensor = 'Active Sensor';
+String ms = 'ms';
+String inBuiltSensor = 'In-built Sensor';
+String updatePeriodErrorMessage =
+    'Entered update period is not within the limits!';
+String highLimitErrorMessage = 'Entered High limit is not within the limits!';
+String baroMeterBulletPoint1 =
+    'The Barometer can be used to measure Atmospheric pressure. This instrument is compatible with either the built in pressure sensor on any android device or the BMP-180 pressure sensor';
+String baroMeterBulletPoint2 =
+    'If you want to use the sensor BMP-180, connect the sensor to PSLab device as shown in the figure.';
+String baroMeterBulletPoint3 =
+    'The above pin configuration has to be same except for the pin GND. GND is meant for Ground and any of the PSLab device GND pins can be used since they are common.';
+String baroMeterBulletPoint4 =
+    'Select the sensor by going to the Configure tab from the bottom navigation bar and choose BMP-180 in the drop down menu under Select Sensor.';
