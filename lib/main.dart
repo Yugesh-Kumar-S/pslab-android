@@ -59,6 +59,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const InstrumentsScreen(),
         '/oscilloscope': (context) => const OscilloscopeScreen(),
+        '/compass': (context) => const CompassScreen(),
         '/multimeter': (context) => const MultimeterScreen(),
         '/logicAnalyzer': (context) => const LogicAnalyzerScreen(),
         '/compass': (context) => const CompassScreen(),
