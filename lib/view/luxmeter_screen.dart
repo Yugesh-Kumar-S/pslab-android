@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pslab/constants.dart';
+import 'package:pslab/l10n/app_localizations.dart';
+import 'package:pslab/providers/locator.dart';
 import 'package:pslab/providers/luxmeter_state_provider.dart';
 import 'package:pslab/providers/luxmeter_config_provider.dart';
 import 'package:pslab/others/csv_service.dart';
@@ -25,7 +26,7 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
   final CsvService _csvService = CsvService();
   bool _showGuide = false;
   static const imagePath = 'assets/images/bh1750_schematic.png';
-
+  AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
   void _showInstrumentGuide() {
     setState(() {
       _showGuide = true;
@@ -41,18 +42,18 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
   List<Widget> _getLuxMeterContent() {
     return [
       InstrumentBulletPoint(
-        text: luxMeterDesc,
+        text: appLocalizations.luxMeterDesc,
       ),
       InstrumentBulletPoint(
-        text: luxMeterSensorIntro,
+        text: appLocalizations.luxMeterSensorIntro,
       ),
       const InstrumentImage(
         imagePath: imagePath,
       ),
       InstrumentBulletPoint(
-        text: luxMeterBulletPoint1,
+        text: appLocalizations.luxMeterBulletPoint1,
       ),
-      InstrumentBulletPoint(text: luxMeterBulletPoint2),
+      InstrumentBulletPoint(text: appLocalizations.luxMeterBulletPoint2),
     ];
   }
 
@@ -68,11 +69,11 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
       items: [
         PopupMenuItem(
           value: 'show_logged_data',
-          child: Text(showLoggedData),
+          child: Text(appLocalizations.showLoggedData),
         ),
         PopupMenuItem(
           value: 'lux_meter_config',
-          child: Text(showLuxmeterConfig),
+          child: Text(appLocalizations.showLuxmeterConfig),
         ),
       ],
       elevation: 8,
@@ -242,7 +243,7 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
         Consumer<LuxMeterStateProvider>(
           builder: (context, provider, child) {
             return CommonScaffold(
-              title: luxMeterTitle,
+              title: appLocalizations.luxMeterTitle,
               onOptionsPressed: _showOptionsMenu,
               onGuidePressed: _showInstrumentGuide,
               onRecordPressed: _toggleRecording,
@@ -283,7 +284,7 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
         ),
         if (_showGuide)
           InstrumentOverviewDrawer(
-            instrumentName: luxMeterTitle,
+            instrumentName: appLocalizations.luxMeterTitle,
             content: _getLuxMeterContent(),
             onHide: _hideInstrumentGuide,
           ),
@@ -372,7 +373,7 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
               axisNameWidget: Padding(
                 padding: EdgeInsets.only(left: screenWidth < 400 ? 15 : 25),
                 child: Text(
-                  timeAxisLabel,
+                  appLocalizations.timeAxisLabel,
                   style: TextStyle(
                     fontSize: axisNameFontSize,
                     color: chartTextColor,
@@ -392,7 +393,7 @@ class _LuxMeterScreenState extends State<LuxMeterScreen> {
             ),
             leftTitles: AxisTitles(
               axisNameWidget: Text(
-                lx,
+                appLocalizations.lx,
                 style: TextStyle(
                   fontSize: axisNameFontSize,
                   color: chartTextColor,

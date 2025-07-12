@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:pslab/l10n/app_localizations.dart';
 import 'package:pslab/others/logger_service.dart';
 import 'package:light/light.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pslab/constants.dart';
 import 'package:pslab/providers/luxmeter_config_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:pslab/providers/locator.dart';
 
 class LuxMeterStateProvider extends ChangeNotifier {
+  AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
   double _currentLux = 0.0;
   StreamSubscription? _lightSubscription;
   Timer? _timeTimer;
@@ -31,6 +33,7 @@ class LuxMeterStateProvider extends ChangeNotifier {
   bool get isRecording => _isRecording;
 
   LuxMeterConfigProvider? _configProvider;
+
   Function(String)? onSensorError;
 
   void setConfigProvider(LuxMeterConfigProvider configProvider) {
@@ -46,7 +49,7 @@ class LuxMeterStateProvider extends ChangeNotifier {
 
   void initializeSensors({Function(String)? onError}) {
     onSensorError = onError;
-    _sensorAvailable = true;
+
     try {
       _light = Light();
       _startTime = DateTime.now().millisecondsSinceEpoch / 1000.0;
@@ -63,13 +66,13 @@ class LuxMeterStateProvider extends ChangeNotifier {
           notifyListeners();
         },
         onError: (error) {
-          logger.e("$lightSensorError $error");
+          logger.e("${appLocalizations.lightSensorError} $error");
           _handleSensorError(error);
         },
         cancelOnError: false,
       );
     } catch (e) {
-      logger.e("$lightSensorInitialError $e");
+      logger.e("${appLocalizations.lightSensorInitialError} $e");
       _handleSensorError(e);
     }
   }
@@ -77,8 +80,8 @@ class LuxMeterStateProvider extends ChangeNotifier {
   void _handleSensorError(dynamic error) {
     if (_sensorAvailable) {
       _sensorAvailable = false;
-      onSensorError?.call(noLightSensor);
-      logger.e("$lightSensorErrorDetails $error");
+      onSensorError?.call(appLocalizations.noLightSensor);
+      logger.e("${appLocalizations.lightSensorErrorDetails} $error");
       _lightSubscription?.cancel();
       _currentLux = 0;
       notifyListeners();
