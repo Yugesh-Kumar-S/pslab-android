@@ -6,6 +6,7 @@ import 'package:light/light.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pslab/constants.dart';
 import 'package:pslab/providers/luxmeter_config_provider.dart';
+import 'package:intl/intl.dart';
 
 class LuxMeterStateProvider extends ChangeNotifier {
   double _currentLux = 0.0;
@@ -17,15 +18,19 @@ class LuxMeterStateProvider extends ChangeNotifier {
   Light? _light;
   double _startTime = 0;
   double _currentTime = 0;
-  final int _maxLength = 50;
+  final int _chartMaxLength = 50;
   double _luxMin = 0;
   double _luxMax = 0;
   double _luxSum = 0;
   int _dataCount = 0;
-  bool _sensorAvailable = false;
+  bool _sensorAvailable = true;
+
+  bool _isRecording = false;
+  List<List<dynamic>> _recordedData = [];
+  double _recordingStartTime = 0.0;
+  bool get isRecording => _isRecording;
 
   LuxMeterConfigProvider? _configProvider;
-
   Function(String)? onSensorError;
 
   void setConfigProvider(LuxMeterConfigProvider configProvider) {
@@ -34,16 +39,14 @@ class LuxMeterStateProvider extends ChangeNotifier {
   }
 
   void _onConfigChanged() {
-    if (_configProvider != null) {
-      // TODO
-    }
+    if (_configProvider != null) {}
   }
 
   LuxMeterConfigProvider? get configProvider => _configProvider;
 
   void initializeSensors({Function(String)? onError}) {
     onSensorError = onError;
-
+    _sensorAvailable = true;
     try {
       _light = Light();
       _startTime = DateTime.now().millisecondsSinceEpoch / 1000.0;
@@ -54,24 +57,13 @@ class LuxMeterStateProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      Timer sensorTimeout = Timer(const Duration(seconds: 3), () {
-        if (!_sensorAvailable) {
-          _handleSensorError(lightSensorErrorLog);
-        }
-      });
-
       _lightSubscription = _light!.lightSensorStream.listen(
         (int luxValue) {
           _currentLux = luxValue.toDouble();
-          if (!_sensorAvailable) {
-            _sensorAvailable = true;
-            sensorTimeout.cancel();
-          }
           notifyListeners();
         },
         onError: (error) {
           logger.e("$lightSensorError $error");
-          sensorTimeout.cancel();
           _handleSensorError(error);
         },
         cancelOnError: false,
@@ -83,9 +75,14 @@ class LuxMeterStateProvider extends ChangeNotifier {
   }
 
   void _handleSensorError(dynamic error) {
-    _sensorAvailable = false;
-    onSensorError?.call(noLightSensor);
-    logger.e("$lightSensorErrorDetails $error");
+    if (_sensorAvailable) {
+      _sensorAvailable = false;
+      onSensorError?.call(noLightSensor);
+      logger.e("$lightSensorErrorDetails $error");
+      _lightSubscription?.cancel();
+      _currentLux = 0;
+      notifyListeners();
+    }
   }
 
   void disposeSensors() {
@@ -101,15 +98,25 @@ class LuxMeterStateProvider extends ChangeNotifier {
   }
 
   void _updateData() {
-    if (!_sensorAvailable) return;
-
-    final lux = _currentLux;
+    final lux = _sensorAvailable ? _currentLux : 0.0;
     final time = _currentTime;
+
+    if (_isRecording) {
+      final relativeTime = time - _recordingStartTime;
+      final now = DateTime.now();
+      final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+      _recordedData.add([
+        dateFormat.format(now),
+        relativeTime.toStringAsFixed(2),
+        lux.toStringAsFixed(2),
+      ]);
+    }
+
     _luxData.add(lux);
     _timeData.add(time);
     _luxSum += lux;
     _dataCount++;
-    if (_luxData.length > _maxLength) {
+    if (_luxData.length > _chartMaxLength) {
       final removedValue = _luxData.removeAt(0);
       _timeData.removeAt(0);
       _luxSum -= removedValue;
@@ -126,6 +133,19 @@ class LuxMeterStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void startRecording() {
+    _isRecording = true;
+    _recordingStartTime = _currentTime;
+    _recordedData = [];
+    notifyListeners();
+  }
+
+  List<List<dynamic>> stopRecording() {
+    _isRecording = false;
+    notifyListeners();
+    return _recordedData;
+  }
+
   double getCurrentLux() => _currentLux;
   double getMinLux() => _luxMin;
   double getMaxLux() => _luxMax;
@@ -133,8 +153,8 @@ class LuxMeterStateProvider extends ChangeNotifier {
   List<FlSpot> getLuxChartData() => luxChartData;
   int getDataLength() => luxChartData.length;
   double getCurrentTime() => _currentTime;
-  double getMaxTime() => _timeData.isNotEmpty ? _timeData.last : 0;
-  double getMinTime() => _timeData.isNotEmpty ? _timeData.first : 0;
+  double getMaxTime() => _timeData.isNotEmpty ? _timeData.last : 0.0;
+  double getMinTime() => _timeData.isNotEmpty ? _timeData.first : 0.0;
   double getTimeInterval() {
     if (_currentTime <= 10) return 2;
     if (_currentTime <= 30) return 5;
