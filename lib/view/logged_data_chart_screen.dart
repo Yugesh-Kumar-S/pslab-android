@@ -55,11 +55,133 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
     return interval > 0 ? interval : 1.0;
   }
 
+  Widget _buildChart(double screenWidth, double maxY, double maxX, double minX,
+      double timeInterval, List<FlSpot> spots) {
+    final chartFontSize = screenWidth < 400
+        ? 8.0
+        : screenWidth < 600
+            ? 9.0
+            : 10.0;
+    final axisNameFontSize = screenWidth < 400 ? 9.0 : 10.0;
+    final reservedSizeBottom = screenWidth < 400 ? 25.0 : 30.0;
+    final reservedSizeLeft = screenWidth < 400 ? 27.0 : 30.0;
+    final reservedSizeRight = screenWidth < 400 ? 27.0 : 30.0;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 20.0),
+      child: LineChart(
+        LineChartData(
+          backgroundColor: chartBackgroundColor,
+          titlesData: FlTitlesData(
+            show: true,
+            topTitles: AxisTitles(
+              axisNameWidget: Padding(
+                padding: EdgeInsets.only(left: screenWidth < 400 ? 15 : 25),
+                child: Text(
+                  widget.xAxisLabel,
+                  style: TextStyle(
+                    fontSize: axisNameFontSize,
+                    color: blackTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              axisNameSize: screenWidth < 400 ? 18 : 20,
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: reservedSizeBottom,
+                getTitlesWidget: (value, meta) {
+                  return SideTitleWidget(
+                    meta: meta,
+                    child: Text(
+                      value.toStringAsFixed(1),
+                      style: TextStyle(
+                        color: blackTextColor,
+                        fontSize: chartFontSize,
+                      ),
+                    ),
+                  );
+                },
+                interval: timeInterval,
+              ),
+            ),
+            leftTitles: AxisTitles(
+              axisNameWidget: Text(
+                widget.yAxisLabel,
+                style: TextStyle(
+                  fontSize: axisNameFontSize,
+                  color: blackTextColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              sideTitles: SideTitles(
+                reservedSize: reservedSizeLeft,
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  return SideTitleWidget(
+                    meta: meta,
+                    child: Text(
+                      value.toInt().toString(),
+                      style: TextStyle(
+                        color: blackTextColor,
+                        fontSize: chartFontSize,
+                      ),
+                    ),
+                  );
+                },
+                interval: maxY > 0 ? (maxY / 5).ceilToDouble() : 10,
+              ),
+            ),
+            rightTitles: AxisTitles(
+              sideTitles: SideTitles(
+                  showTitles: false, reservedSize: reservedSizeRight),
+            ),
+          ),
+          gridData: FlGridData(
+            show: true,
+            drawHorizontalLine: true,
+            drawVerticalLine: true,
+            horizontalInterval: maxY > 0 ? (maxY / 5).ceilToDouble() : 10,
+            verticalInterval: timeInterval,
+          ),
+          borderData: FlBorderData(
+            show: true,
+            border: Border(
+              bottom: BorderSide(color: chartBorderColor),
+              left: BorderSide(color: chartBorderColor),
+              top: BorderSide(color: chartBorderColor),
+              right: BorderSide(color: chartBorderColor),
+            ),
+          ),
+          minY: 0,
+          maxY: maxY > 0 ? (maxY * 1.1) : 100,
+          maxX: maxX > 0 ? maxX : 10,
+          minX: minX,
+          clipData: const FlClipData.all(),
+          lineBarsData: [
+            LineChartBarData(
+              spots: spots,
+              isCurved: true,
+              color: chartLineColor,
+              barWidth: screenWidth < 400 ? 1.5 : 2.0,
+              isStrokeCapRound: true,
+              dotData: const FlDotData(show: false),
+              belowBarData: BarAreaData(show: false),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<FlSpot> spots = [];
     double maxY = 0;
     double maxX = 0;
+    double minX = 0;
 
     for (int i = 1; i < widget.data.length; i++) {
       final row = widget.data[i];
@@ -70,16 +192,15 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
         spots.add(FlSpot(x, y));
         if (y > maxY) maxY = y;
         if (x > maxX) maxX = x;
+        if (i == 1 || x < minX) minX = x;
       }
     }
 
-    double chartWidth = spots.length * 12.0;
     final screenWidth = MediaQuery.of(context).size.width;
-    if (chartWidth < screenWidth) {
-      chartWidth = screenWidth;
-    }
+    final timeInterval = _getSafeInterval(maxX, divisions: 10);
 
     return Scaffold(
+      backgroundColor: scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           widget.fileName,
@@ -91,66 +212,24 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
       body: SafeArea(
         child: spots.isEmpty
             ? Center(child: Text(appLocalizations.noValidData))
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  width: chartWidth,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                  child: LineChart(
-                    LineChartData(
-                      backgroundColor: chartBackgroundColor,
-                      titlesData: FlTitlesData(
-                        show: true,
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        bottomTitles: AxisTitles(
-                          axisNameWidget: Text(widget.xAxisLabel),
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 30,
-                            interval: _getSafeInterval(maxX, divisions: 10),
-                          ),
-                        ),
-                        leftTitles: AxisTitles(
-                          axisNameWidget: Text(widget.yAxisLabel),
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 45,
-                            interval: _getSafeInterval(maxY, divisions: 5),
-                          ),
-                        ),
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                      ),
-                      gridData: FlGridData(
-                        show: true,
-                        drawHorizontalLine: true,
-                        drawVerticalLine: true,
-                        horizontalInterval:
-                            _getSafeInterval(maxY, divisions: 5),
-                        verticalInterval: _getSafeInterval(maxX, divisions: 10),
-                      ),
-                      borderData: FlBorderData(
-                        show: true,
-                        border: Border.all(color: chartBorderColor),
-                      ),
-                      minY: 0,
-                      maxY: maxY > 0 ? maxY * 1.1 : 10,
-                      minX: 0,
-                      maxX: maxX,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: spots,
-                          isCurved: true,
-                          color: chartLineColor,
-                          barWidth: 2.0,
-                          dotData: const FlDotData(show: false),
-                        ),
-                      ],
-                    ),
+            : Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: InteractiveViewer(
+                  constrained: false,
+                  scaleEnabled: false,
+                  panEnabled: true,
+                  child: SizedBox(
+                    width: spots.length * 12.0 < screenWidth
+                        ? screenWidth
+                        : spots.length * 12.0,
+                    height: MediaQuery.of(context).size.height -
+                        kToolbarHeight -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom -
+                        48,
+                    child: _buildChart(
+                        screenWidth, maxY, maxX, minX, timeInterval, spots),
                   ),
                 ),
               ),
