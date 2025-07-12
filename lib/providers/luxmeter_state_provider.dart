@@ -110,18 +110,18 @@ class LuxMeterStateProvider extends ChangeNotifier {
   void _updateData() {
     final lux = _sensorAvailable ? _currentLux : null;
     final time = _currentTime;
-
-    if (_isRecording) {
-      final relativeTime = time - _recordingStartTime;
-      final now = DateTime.now();
-      final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
-      _recordedData.add([
-        dateFormat.format(now),
-        relativeTime.toStringAsFixed(2),
-        lux?.toStringAsFixed(2),
-      ]);
-    }
     if (lux != null) {
+      if (_isRecording) {
+        final relativeTime = time - _recordingStartTime;
+        final now = DateTime.now();
+        final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+        _recordedData.add([
+          dateFormat.format(now),
+          relativeTime.toStringAsFixed(2),
+          lux.toStringAsFixed(2),
+        ]);
+      }
+
       _luxData.add(lux);
       _timeData.add(time);
       _luxSum += lux;
