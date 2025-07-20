@@ -1069,6 +1069,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get fileDeleted => 'File deleted';
 
+  @override
   String get soundmeterConfig => 'Soundmeter Configurations';
 
   @override
@@ -1099,4 +1100,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accelerometerHighLimitHint =>
       'Please provide the maximum limit of lux value to be recorded';
+
+  @override
+  String get soundmeterSnackBarMessage => 'Unable to access sound sensor';
+
+  @override
+  String get dangerous => 'Dangerous';
 }

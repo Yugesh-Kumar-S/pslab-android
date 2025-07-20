@@ -2145,6 +2145,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please provide the maximum limit of lux value to be recorded'**
   String get accelerometerHighLimitHint;
+
+  /// No description provided for @soundmeterSnackBarMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to access sound sensor'**
+  String get soundmeterSnackBarMessage;
+
+  /// No description provided for @dangerous.
+  ///
+  /// In en, this message translates to:
+  /// **'Dangerous'**
+  String get dangerous;
 }
 
 class _AppLocalizationsDelegate
