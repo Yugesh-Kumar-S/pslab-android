@@ -26,7 +26,6 @@ class SoundMeterStateProvider extends ChangeNotifier {
   int _dataCount = 0;
   bool _isRecording = false;
   List<List<dynamic>> _recordedData = [];
-  double _recordingStartTime = 0.0;
   bool get isRecording => _isRecording;
 
   Function(String)? onSensorError;
@@ -103,13 +102,14 @@ class SoundMeterStateProvider extends ChangeNotifier {
     final db = _currentDb;
     final time = _currentTime;
     if (_isRecording) {
-      final relativeTime = time - _recordingStartTime;
       final now = DateTime.now();
       final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
       _recordedData.add([
+        now.millisecondsSinceEpoch.toString(),
         dateFormat.format(now),
-        relativeTime.toStringAsFixed(2),
         db.toStringAsFixed(2),
+        0,
+        0
       ]);
     }
     _dbData.add(db);
@@ -135,8 +135,9 @@ class SoundMeterStateProvider extends ChangeNotifier {
 
   void startRecording() {
     _isRecording = true;
-    _recordingStartTime = _currentTime;
-    _recordedData = [];
+    _recordedData = [
+      ['Timestamp', 'DateTime', 'Readings', 'Latitude', 'Longitude']
+    ];
     notifyListeners();
   }
 
