@@ -127,18 +127,17 @@ class _BarometerScreenState extends State<BarometerScreen> {
   }
 
   void _navigateToConfig() {
-    Navigator.push(
+    if (_configProvider != null) {
+      Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MultiProvider(
-            providers: [
-              ChangeNotifierProvider.value(
-                value: _configProvider ?? BarometerConfigProvider(),
-              ),
-            ],
+          builder: (context) => ChangeNotifierProvider.value(
+            value: _configProvider,
             child: const BarometerConfigScreen(),
           ),
-        ));
+        ),
+      );
+    }
   }
 
   @override
@@ -153,23 +152,18 @@ class _BarometerScreenState extends State<BarometerScreen> {
         ),
         ChangeNotifierProxyProvider<BarometerConfigProvider,
             BarometerStateProvider>(
-          create: (context) => BarometerStateProvider(
-              Provider.of<BarometerConfigProvider>(context, listen: false))
-            ..initializeSensors(
-              onError: _showSensorErrorSnackbar,
-              i2c: _i2c,
-              scienceLab: _scienceLab,
-            ),
+          create: (context) {
+            final configProvider =
+                Provider.of<BarometerConfigProvider>(context, listen: false);
+            return BarometerStateProvider(configProvider)
+              ..initializeSensors(
+                onError: _showSensorErrorSnackbar,
+                i2c: _i2c,
+                scienceLab: _scienceLab,
+              );
+          },
           update: (context, configProvider, previous) {
-            if (previous == null) {
-              return BarometerStateProvider(configProvider)
-                ..initializeSensors(
-                  onError: _showSensorErrorSnackbar,
-                  i2c: _i2c,
-                  scienceLab: _scienceLab,
-                );
-            }
-            return previous;
+            return previous!;
           },
         ),
       ],

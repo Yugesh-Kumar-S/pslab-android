@@ -3,7 +3,12 @@ import 'package:pslab/communication/peripherals/i2c.dart';
 import 'package:pslab/communication/science_lab.dart';
 import 'package:pslab/others/logger_service.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../providers/locator.dart';
+
 class BMP180 {
+  AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
+
   static const String tag = "BMP180";
 
   static const int address = 0x77;
@@ -83,11 +88,7 @@ class BMP180 {
     try {
       List<int> data = await i2c.readBulk(address, registerAddress, 2);
       int value = ((data[0] & 0xFF) << 8) | (data[1] & 0xFF);
-
-      if ((value & 0x8000) != 0) {
-        value |= 0xFFFF0000;
-      }
-
+      if (value >= 0x8000) value -= 0x10000;
       return value;
     } catch (e) {
       logger.e("Error reading int16 from register $registerAddress: $e");

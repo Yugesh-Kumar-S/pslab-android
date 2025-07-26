@@ -7,7 +7,7 @@ import 'package:pslab/others/logger_service.dart';
 import 'package:pslab/providers/locator.dart';
 import 'package:pslab/communication/peripherals/i2c.dart';
 import 'package:pslab/communication/science_lab.dart';
-import 'package:pslab/communication/peripherals/bmp180.dart';
+import 'package:pslab/communication/sensors/bmp180.dart';
 import 'package:pslab/providers/barometer_config_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -138,8 +138,21 @@ class BarometerStateProvider extends ChangeNotifier {
     );
   }
 
+  Future<bool> _checkBMP180Connection() async {
+    if (_i2c == null) return false;
+
+    try {
+      int chipId = await _i2c!.readByte(BMP180.address, 0xD0);
+      logger.d("BMP180 Chip ID: 0x${chipId.toRadixString(16)}");
+      return chipId == 0x55;
+    } catch (e) {
+      logger.e("Error checking BMP180 connection: $e");
+      return false;
+    }
+  }
+
   void _initializeBMP180Sensor() async {
-    logger.d("Initializing BMP180 sensor...");
+    logger.d("Checking BMP180 sensor connection...");
 
     if (_i2c == null || _scienceLab == null) {
       logger.e("I2C or ScienceLab not provided for BMP180 sensor");
@@ -150,6 +163,13 @@ class BarometerStateProvider extends ChangeNotifier {
     if (!_scienceLab!.isConnected()) {
       logger.e("ScienceLab not connected");
       _handleSensorError("ScienceLab not connected");
+      return;
+    }
+    bool isConnected = await _checkBMP180Connection();
+    if (!isConnected) {
+      logger.e(
+          "BMP180 sensor not found at address 0x${BMP180.address.toRadixString(16)}");
+      _handleSensorError("BMP180 sensor not connected or not responding");
       return;
     }
 
@@ -319,16 +339,4 @@ class BarometerStateProvider extends ChangeNotifier {
   String get currentSensorType => _currentSensorType;
   bool get isBMP180Active => _currentSensorType == 'BMP180';
   bool get isBuiltInActive => _currentSensorType == 'In-built Sensor';
-
-  Future<void> refreshBMP180Data() async {
-    if (_currentSensorType == 'BMP180' && _bmp180Sensor != null) {
-      await _readBMP180Data();
-    }
-  }
-
-  void setBMP180Oversampling(int mode) {
-    if (_bmp180Sensor != null) {
-      _bmp180Sensor!.setOversampling(mode);
-    }
-  }
 }
