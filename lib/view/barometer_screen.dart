@@ -1,5 +1,6 @@
 import 'dart:math';
-
+import 'package:pslab/communication/peripherals/i2c.dart';
+import 'package:pslab/communication/science_lab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pslab/l10n/app_localizations.dart';
@@ -24,6 +25,26 @@ class _BarometerScreenState extends State<BarometerScreen> {
   AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
   bool _showGuide = false;
   static const imagePath = 'assets/images/bmp180_schematic.png';
+
+  I2C? _i2c;
+  ScienceLab? _scienceLab;
+  BarometerConfigProvider? _configProvider;
+  @override
+  void initState() {
+    super.initState();
+    _initializeScienceLab();
+  }
+
+  void _initializeScienceLab() async {
+    try {
+      _scienceLab = getIt.get<ScienceLab>();
+      if (_scienceLab != null && _scienceLab!.isConnected()) {
+        _i2c = I2C(_scienceLab!.mPacketHandler);
+      }
+    } catch (e) {
+      //
+    }
+  }
 
   void _showSensorErrorSnackbar(String message) {
     if (mounted) {
@@ -109,8 +130,12 @@ class _BarometerScreenState extends State<BarometerScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ChangeNotifierProvider(
-            create: (context) => BarometerConfigProvider(),
+          builder: (context) => MultiProvider(
+            providers: [
+              ChangeNotifierProvider.value(
+                value: _configProvider ?? BarometerConfigProvider(),
+              ),
+            ],
             child: const BarometerConfigScreen(),
           ),
         ));
@@ -120,9 +145,32 @@ class _BarometerScreenState extends State<BarometerScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<BarometerStateProvider>(
-          create: (_) => BarometerStateProvider()
-            ..initializeSensors(onError: _showSensorErrorSnackbar),
+        ChangeNotifierProvider<BarometerConfigProvider>(
+          create: (_) {
+            _configProvider = BarometerConfigProvider();
+            return _configProvider!;
+          },
+        ),
+        ChangeNotifierProxyProvider<BarometerConfigProvider,
+            BarometerStateProvider>(
+          create: (context) => BarometerStateProvider(
+              Provider.of<BarometerConfigProvider>(context, listen: false))
+            ..initializeSensors(
+              onError: _showSensorErrorSnackbar,
+              i2c: _i2c,
+              scienceLab: _scienceLab,
+            ),
+          update: (context, configProvider, previous) {
+            if (previous == null) {
+              return BarometerStateProvider(configProvider)
+                ..initializeSensors(
+                  onError: _showSensorErrorSnackbar,
+                  i2c: _i2c,
+                  scienceLab: _scienceLab,
+                );
+            }
+            return previous;
+          },
         ),
       ],
       child: Stack(children: [

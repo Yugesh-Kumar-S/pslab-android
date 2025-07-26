@@ -5,14 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:pslab/l10n/app_localizations.dart';
 import 'package:pslab/others/logger_service.dart';
 import 'package:pslab/providers/locator.dart';
+import 'package:pslab/communication/peripherals/i2c.dart';
+import 'package:pslab/communication/science_lab.dart';
+import 'package:pslab/communication/peripherals/bmp180.dart';
+import 'package:pslab/providers/barometer_config_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter/foundation.dart';
 
 class BarometerStateProvider extends ChangeNotifier {
   AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
+
   double _currentPressure = 0.0;
-  StreamSubscription? _barometerSubscription;
+  double _currentTemperature = 0.0;
+  double _currentAltitude = 0.0;
   Timer? _timeTimer;
+  Timer? _dataTimer;
   final List<double> _pressureData = [];
   final List<double> _timeData = [];
   final List<FlSpot> pressureChartData = [];
@@ -25,10 +32,60 @@ class BarometerStateProvider extends ChangeNotifier {
   int _dataCount = 0;
   bool _sensorAvailable = false;
 
+  StreamSubscription? _barometerSubscription;
+
+  BMP180? _bmp180Sensor;
+  I2C? _i2c;
+  ScienceLab? _scienceLab;
+
+  final BarometerConfigProvider _configProvider;
+  String _currentSensorType = 'In-built Sensor';
+
   Function(String)? onSensorError;
 
-  void initializeSensors({Function(String)? onError}) {
+  BarometerStateProvider(this._configProvider) {
+    _configProvider.addListener(_onConfigChanged);
+    _currentSensorType = _configProvider.config.activeSensor;
+  }
+
+  void _onConfigChanged() {
+    final newSensorType = _configProvider.config.activeSensor;
+    if (_currentSensorType != newSensorType) {
+      logger
+          .d("Sensor type changed from $_currentSensorType to $newSensorType");
+      _currentSensorType = newSensorType;
+      _reinitializeSensors();
+    }
+  }
+
+  void _reinitializeSensors() {
+    logger.d("Reinitializing sensors for $_currentSensorType");
+    disposeSensors();
+    _clearData();
+    initializeSensors(
+        onError: onSensorError, i2c: _i2c, scienceLab: _scienceLab);
+  }
+
+  void _clearData() {
+    _pressureData.clear();
+    _timeData.clear();
+    pressureChartData.clear();
+    _pressureSum = 0;
+    _dataCount = 0;
+    _pressureMin = 0;
+    _pressureMax = 0;
+    _currentPressure = 0.0;
+    _currentTemperature = 0.0;
+    _currentAltitude = 0.0;
+    _sensorAvailable = false;
+    notifyListeners();
+  }
+
+  void initializeSensors(
+      {Function(String)? onError, I2C? i2c, ScienceLab? scienceLab}) {
     onSensorError = onError;
+    _i2c = i2c;
+    _scienceLab = scienceLab;
 
     try {
       _startTime = DateTime.now().millisecondsSinceEpoch / 1000.0;
@@ -41,31 +98,107 @@ class BarometerStateProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      Timer sensorTimeout = Timer(const Duration(seconds: 3), () {
-        if (!_sensorAvailable) {
-          _handleSensorError(appLocalizations.barometerSensorError);
-        }
-      });
-
-      _barometerSubscription = barometerEventStream().listen(
-        (BarometerEvent event) {
-          _currentPressure = event.pressure / 1013.25;
-          if (!_sensorAvailable) {
-            _sensorAvailable = true;
-            sensorTimeout.cancel();
-          }
-          notifyListeners();
-        },
-        onError: (error) {
-          logger.e("${appLocalizations.barometerSensorError} $error");
-          sensorTimeout.cancel();
-          _handleSensorError(error);
-        },
-        cancelOnError: false,
-      );
+      if (_currentSensorType == 'In-built Sensor') {
+        _initializeBuiltInSensor();
+      } else if (_currentSensorType == 'BMP180') {
+        _initializeBMP180Sensor();
+      }
     } catch (e) {
       logger.e("${appLocalizations.barometerSensorInitialError} $e");
       _handleSensorError(e);
+    }
+  }
+
+  void _initializeBuiltInSensor() {
+    Timer sensorTimeout = Timer(const Duration(seconds: 3), () {
+      if (!_sensorAvailable) {
+        _handleSensorError(appLocalizations.barometerSensorError);
+      }
+    });
+
+    _barometerSubscription = barometerEventStream().listen(
+      (BarometerEvent event) {
+        _currentPressure = event.pressure / 1013.25;
+        _currentAltitude = _pressureToAltitude(_currentPressure);
+        _currentTemperature = 0.0;
+
+        if (!_sensorAvailable) {
+          _sensorAvailable = true;
+          sensorTimeout.cancel();
+          _startDataCollection();
+        }
+        notifyListeners();
+      },
+      onError: (error) {
+        logger.e("${appLocalizations.barometerSensorError} $error");
+        sensorTimeout.cancel();
+        _handleSensorError(error);
+      },
+      cancelOnError: false,
+    );
+  }
+
+  void _initializeBMP180Sensor() async {
+    logger.d("Initializing BMP180 sensor...");
+
+    if (_i2c == null || _scienceLab == null) {
+      logger.e("I2C or ScienceLab not provided for BMP180 sensor");
+      _handleSensorError("I2C or ScienceLab not provided for BMP180 sensor");
+      return;
+    }
+
+    if (!_scienceLab!.isConnected()) {
+      logger.e("ScienceLab not connected");
+      _handleSensorError("ScienceLab not connected");
+      return;
+    }
+
+    try {
+      _bmp180Sensor = await BMP180.create(_i2c!, _scienceLab!);
+      _sensorAvailable = true;
+      _startDataCollection();
+      logger.d("BMP180 sensor initialized successfully");
+
+      await _readBMP180Data();
+      notifyListeners();
+    } catch (e) {
+      logger.e("Error initializing BMP180 sensor: $e");
+      _handleSensorError("Failed to initialize BMP180 sensor: $e");
+    }
+  }
+
+  void _startDataCollection() {
+    if (_currentSensorType == 'BMP180') {
+      final updatePeriod = _configProvider.config.updatePeriod;
+      logger
+          .d("Starting BMP180 data collection with period: ${updatePeriod}ms");
+
+      _dataTimer?.cancel();
+      _dataTimer =
+          Timer.periodic(Duration(milliseconds: updatePeriod), (timer) async {
+        await _readBMP180Data();
+      });
+    }
+  }
+
+  Future<void> _readBMP180Data() async {
+    if (_bmp180Sensor == null || !_sensorAvailable) {
+      logger.w("BMP180 sensor not available for reading");
+      return;
+    }
+
+    try {
+      final data = await _bmp180Sensor!.getRawData();
+      _currentTemperature = data['temperature'] ?? 0.0;
+      _currentPressure = (data['pressure'] ?? 0.0) / 101325.0;
+      _currentAltitude = data['altitude'] ?? 0.0;
+
+      logger.d(
+          "BMP180 data - Temp: $_currentTemperature°C, Pressure: $_currentPressure atm, Altitude: $_currentAltitude m");
+      notifyListeners();
+    } catch (e) {
+      logger.e("Error reading BMP180 data: $e");
+      _handleSensorError("Error reading BMP180 data: $e");
     }
   }
 
@@ -76,12 +209,20 @@ class BarometerStateProvider extends ChangeNotifier {
   }
 
   void disposeSensors() {
+    logger.d("Disposing sensors...");
     _barometerSubscription?.cancel();
+    _barometerSubscription = null;
     _timeTimer?.cancel();
+    _timeTimer = null;
+    _dataTimer?.cancel();
+    _dataTimer = null;
+    _bmp180Sensor = null;
+    _sensorAvailable = false;
   }
 
   @override
   void dispose() {
+    _configProvider.removeListener(_onConfigChanged);
     disposeSensors();
     super.dispose();
   }
@@ -95,16 +236,19 @@ class BarometerStateProvider extends ChangeNotifier {
     _timeData.add(time);
     _pressureSum += pressure;
     _dataCount++;
+
     if (_pressureData.length > _maxLength) {
       final removedValue = _pressureData.removeAt(0);
       _timeData.removeAt(0);
       _pressureSum -= removedValue;
       _dataCount--;
     }
+
     if (_pressureData.isNotEmpty) {
       _pressureMin = _pressureData.reduce(min);
       _pressureMax = _pressureData.reduce(max);
     }
+
     pressureChartData.clear();
     for (int i = 0; i < _pressureData.length; i++) {
       pressureChartData.add(FlSpot(_timeData[i], _pressureData[i]));
@@ -135,12 +279,21 @@ class BarometerStateProvider extends ChangeNotifier {
   double getAveragePressure() =>
       _dataCount > 0 ? _pressureSum / _dataCount : 0.0;
 
-  double getCurrentAltitude() => _pressureToAltitude(_currentPressure);
+  double getCurrentAltitude() {
+    if (_currentSensorType == 'BMP180' && _currentAltitude != 0.0) {
+      return _currentAltitude;
+    }
+    return _pressureToAltitude(_currentPressure);
+  }
+
   double getMinAltitude() =>
       _pressureMin > 0 ? _pressureToAltitude(_pressureMin) : 0.0;
   double getMaxAltitude() =>
       _pressureMax > 0 ? _pressureToAltitude(_pressureMax) : 0.0;
   double getAverageAltitude() => _pressureToAltitude(getAveragePressure());
+
+  double getCurrentTemperature() => _currentTemperature;
+  bool hasTemperatureData() => _currentSensorType == 'BMP180';
 
   double getMaxAltitudeForChart() =>
       _pressureMax > 0 ? _pressureToAltitude(0) : 10000.0;
@@ -163,4 +316,19 @@ class BarometerStateProvider extends ChangeNotifier {
   }
 
   bool get sensorAvailable => _sensorAvailable;
+  String get currentSensorType => _currentSensorType;
+  bool get isBMP180Active => _currentSensorType == 'BMP180';
+  bool get isBuiltInActive => _currentSensorType == 'In-built Sensor';
+
+  Future<void> refreshBMP180Data() async {
+    if (_currentSensorType == 'BMP180' && _bmp180Sensor != null) {
+      await _readBMP180Data();
+    }
+  }
+
+  void setBMP180Oversampling(int mode) {
+    if (_bmp180Sensor != null) {
+      _bmp180Sensor!.setOversampling(mode);
+    }
+  }
 }
