@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pslab/l10n/app_localizations.dart';
 import 'package:pslab/others/logger_service.dart';
 import 'package:pslab/providers/locator.dart';
@@ -25,12 +26,15 @@ class BarometerStateProvider extends ChangeNotifier {
   final List<FlSpot> pressureChartData = [];
   double _startTime = 0;
   double _currentTime = 0;
-  final int _maxLength = 50;
+  final int _chartMaxLength = 50;
   double _pressureMin = 0;
   double _pressureMax = 0;
   double _pressureSum = 0;
   int _dataCount = 0;
   bool _sensorAvailable = false;
+  bool _isRecording = false;
+  List<List<dynamic>> _recordedData = [];
+  bool get isRecording => _isRecording;
 
   StreamSubscription? _barometerSubscription;
 
@@ -252,12 +256,24 @@ class BarometerStateProvider extends ChangeNotifier {
 
     final pressure = _currentPressure;
     final time = _currentTime;
+    if (_isRecording) {
+      final now = DateTime.now();
+      final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+      _recordedData.add([
+        now.millisecondsSinceEpoch.toString(),
+        dateFormat.format(now),
+        pressure.toStringAsFixed(2),
+        getCurrentAltitude().toStringAsFixed(2),
+        0,
+        0
+      ]);
+    }
     _pressureData.add(pressure);
     _timeData.add(time);
     _pressureSum += pressure;
     _dataCount++;
 
-    if (_pressureData.length > _maxLength) {
+    if (_pressureData.length > _chartMaxLength) {
       final removedValue = _pressureData.removeAt(0);
       _timeData.removeAt(0);
       _pressureSum -= removedValue;
@@ -291,6 +307,20 @@ class BarometerStateProvider extends ChangeNotifier {
                 (gasConstant * lapseRate) / gravity));
 
     return altitude;
+  }
+
+  void startRecording() {
+    _isRecording = true;
+    _recordedData = [
+      ['Timestamp', 'DateTime', 'Pressure', 'Altitude', 'Latitude', 'Longitude']
+    ];
+    notifyListeners();
+  }
+
+  List<List<dynamic>> stopRecording() {
+    _isRecording = false;
+    notifyListeners();
+    return _recordedData;
   }
 
   double getCurrentPressure() => _currentPressure;
