@@ -227,25 +227,21 @@ class SensorChartWidget extends StatelessWidget {
       children: [
         Positioned(
           bottom: 12,
-          right: 20,
-          child: Positioned(
-            bottom: 12,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(180),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  appLocalizations.timeAxisLabel,
-                  style: TextStyle(
-                    color: chartTextColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(180),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                appLocalizations.timeAxisLabel,
+                style: TextStyle(
+                  color: chartTextColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
