@@ -13,6 +13,7 @@ class LoggedDataChartScreen extends StatefulWidget {
   final String yAxisLabel;
   final int xDataColumnIndex;
   final int yDataColumnIndex;
+  final String? instrumentName;
 
   const LoggedDataChartScreen({
     super.key,
@@ -22,6 +23,7 @@ class LoggedDataChartScreen extends StatefulWidget {
     this.yAxisLabel = 'Value',
     this.xDataColumnIndex = 0,
     this.yDataColumnIndex = 2,
+    this.instrumentName,
   });
 
   @override
@@ -30,6 +32,27 @@ class LoggedDataChartScreen extends StatefulWidget {
 
 class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
   AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
+  String selectedAxis = 'x';
+  bool get _shouldShowAxisSelector {
+    return widget.instrumentName?.toLowerCase() == 'gyroscope' ||
+        widget.instrumentName?.toLowerCase() == 'accelerometer';
+  }
+
+  int _getYDataColumnIndex() {
+    if (_shouldShowAxisSelector) {
+      switch (selectedAxis) {
+        case 'x':
+          return 2;
+        case 'y':
+          return 3;
+        case 'z':
+          return 4;
+        default:
+          return 2;
+      }
+    }
+    return widget.yDataColumnIndex;
+  }
 
   @override
   void initState() {
@@ -200,7 +223,7 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
       if (row.length > widget.xDataColumnIndex &&
           row.length > widget.yDataColumnIndex) {
         final xValue = _parseDouble(row[widget.xDataColumnIndex]);
-        final yValue = _parseDouble(row[widget.yDataColumnIndex]);
+        final yValue = _parseDouble(row[_getYDataColumnIndex()]);
 
         if (xValue != null && yValue != null) {
           if (startTime == null) {
@@ -245,6 +268,36 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
     return Scaffold(
       backgroundColor: scaffoldBackgroundColor,
       appBar: AppBar(
+        actions: _shouldShowAxisSelector
+            ? [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: DropdownButton<String>(
+                    value: selectedAxis,
+                    dropdownColor: primaryRed,
+                    underline: Container(),
+                    icon:
+                        Icon(Icons.arrow_drop_down, color: appBarContentColor),
+                    items: ['x', 'y', 'z'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value.toUpperCase(),
+                          style: TextStyle(color: appBarContentColor),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedAxis = newValue;
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ]
+            : null,
         title: Text(
           widget.fileName,
           style: TextStyle(color: appBarContentColor, fontSize: 15),
