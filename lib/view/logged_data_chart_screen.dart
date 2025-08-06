@@ -55,6 +55,14 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
     return interval > 0 ? interval : 1.0;
   }
 
+  double _getSafeYInterval(double minValue, double maxValue,
+      {int divisions = 5}) {
+    final double range = maxValue - minValue;
+    if (range <= 0) return 1.0;
+    final double interval = (range / divisions).ceilToDouble();
+    return interval > 0 ? interval : 1.0;
+  }
+
   double? _parseDouble(dynamic value) {
     if (value == null) return null;
     if (value is num) return value.toDouble();
@@ -68,8 +76,8 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
     return null;
   }
 
-  Widget _buildChart(double screenWidth, double maxY, double maxX, double minX,
-      double timeInterval, List<FlSpot> spots) {
+  Widget _buildChart(double screenWidth, double minY, double maxY, double maxX,
+      double minX, double timeInterval, double yInterval, List<FlSpot> spots) {
     final chartFontSize = screenWidth < 400
         ? 8.0
         : screenWidth < 600
@@ -77,7 +85,7 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
             : 10.0;
     final axisNameFontSize = screenWidth < 400 ? 9.0 : 10.0;
     final reservedSizeBottom = screenWidth < 400 ? 25.0 : 30.0;
-    final reservedSizeLeft = screenWidth < 400 ? 27.0 : 30.0;
+    final reservedSizeLeft = screenWidth < 400 ? 35.0 : 40.0;
     final reservedSizeRight = screenWidth < 400 ? 27.0 : 30.0;
 
     return Padding(
@@ -125,7 +133,7 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
                   return SideTitleWidget(
                     meta: meta,
                     child: Text(
-                      value.toInt().toString(),
+                      value.toStringAsFixed(value.abs() < 10 ? 1 : 0),
                       style: TextStyle(
                         color: blackTextColor,
                         fontSize: chartFontSize,
@@ -133,7 +141,7 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
                     ),
                   );
                 },
-                interval: maxY > 0 ? (maxY / 5).ceilToDouble() : 10,
+                interval: yInterval,
               ),
             ),
             rightTitles: AxisTitles(
@@ -145,7 +153,7 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
             show: true,
             drawHorizontalLine: true,
             drawVerticalLine: true,
-            horizontalInterval: maxY > 0 ? (maxY / 5).ceilToDouble() : 10,
+            horizontalInterval: yInterval,
             verticalInterval: timeInterval,
           ),
           borderData: FlBorderData(
@@ -157,8 +165,8 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
               right: BorderSide(color: chartBorderColor),
             ),
           ),
-          minY: 0,
-          maxY: maxY > 0 ? (maxY * 1.1) : 100,
+          minY: minY,
+          maxY: maxY,
           maxX: maxX > 0 ? maxX : 10,
           minX: minX,
           clipData: const FlClipData.all(),
@@ -181,7 +189,8 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
   @override
   Widget build(BuildContext context) {
     final List<FlSpot> spots = [];
-    double maxY = 0;
+    double maxY = double.negativeInfinity;
+    double minY = double.infinity;
     double maxX = 0;
     double minX = 0;
     double? startTime;
@@ -202,14 +211,36 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
           final relativeTime = ((xValue - startTime) / 1000.0);
 
           spots.add(FlSpot(relativeTime, yValue));
+
           if (yValue > maxY) maxY = yValue;
+          if (yValue < minY) minY = yValue;
           if (relativeTime > maxX) maxX = relativeTime;
         }
       }
     }
 
+    if (spots.isEmpty) {
+      minY = 0;
+      maxY = 100;
+    } else if (minY == maxY) {
+      final padding = minY.abs() * 0.1;
+      if (padding == 0) {
+        minY = -1;
+        maxY = 1;
+      } else {
+        minY -= padding;
+        maxY += padding;
+      }
+    } else {
+      final range = maxY - minY;
+      final padding = range * 0.1;
+      minY -= padding;
+      maxY += padding;
+    }
+
     final screenWidth = MediaQuery.of(context).size.width;
     final timeInterval = _getSafeInterval(maxX, divisions: 10);
+    final yInterval = _getSafeYInterval(minY, maxY, divisions: 5);
 
     return Scaffold(
       backgroundColor: scaffoldBackgroundColor,
@@ -240,8 +271,8 @@ class _LoggedDataChartScreenState extends State<LoggedDataChartScreen> {
                         MediaQuery.of(context).padding.top -
                         MediaQuery.of(context).padding.bottom -
                         48,
-                    child: _buildChart(
-                        screenWidth, maxY, maxX, minX, timeInterval, spots),
+                    child: _buildChart(screenWidth, minY, maxY, maxX, minX,
+                        timeInterval, yInterval, spots),
                   ),
                 ),
               ),
