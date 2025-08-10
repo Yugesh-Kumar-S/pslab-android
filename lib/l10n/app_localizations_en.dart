@@ -1047,6 +1047,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteHint => 'Are you sure you want to delete this file?';
 
   @override
+  String get documentationLink => 'https://docs.pslab.io/';
+
+  @override
+  String get documentationError => 'Could not open the documentation link';
+
+  @override
   String get deleteFile => 'Delete File';
 
   @override
@@ -1153,16 +1159,80 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please provide the maximum limit of lux value to be recorded';
 
   @override
-  String get documentationLink => 'https://docs.pslab.io/';
-
-  @override
-  String get documentationError => 'Could not open the documentation link';
-
-  @override
   String get roboticArmIntro =>
       '• A robotic arm is a programmable mechanical device that mimics the movement of a human arm.\n• It uses servo motors to control its motion, and these motors are operated using PWM signals.\n• The PSLab provides four PWM square wave generators (SQ1, SQ2, SQ3, SQ4), allowing control of up to four servo motors and enabling a robotic arm with up to four degrees of freedom.';
 
   @override
   String get roboticArmConnection =>
       '• In the above figure, SQ1 is connected to the signal pin of the first servo motor. The servo\'s GND pin is connected to both the PSLab’s GND and the external power supply GND, while the VCC pin is connected to the external power supply VCC.\n• Similarly, connect the remaining servos to SQ2, SQ3, and SQ4 along with their respective GND and power supply connections.\n• Once connected, each servo can be controlled using either circular sliders for manual control or a timeline-based sequence for automated movement.';
+
+  @override
+  String get autoscan => 'Autoscan';
+
+  @override
+  String get selectSensor => 'Select Sensor';
+
+  @override
+  String get notConnected => 'Not Connected';
+
+  @override
+  String get autoScanHint =>
+      'Use Autoscan button to find connected sensors to PSLab device';
+
+  @override
+  String get noSensorDetected => 'No sensors detected';
+
+  @override
+  String get screenNotImplemented => 'screen not implemented yet';
+
+  @override
+  String get timeGap => 'Time gap';
+
+  @override
+  String get pslabNotConnected => 'PSLab not connected';
+
+  @override
+  String get clearData => 'Clear Data';
+
+  @override
+  String get numberOfSampes => 'No. of samples';
+
+  @override
+  String get pressure => 'Pressure';
+
+  @override
+  String get temperature => 'Temperature';
+
+  @override
+  String get bmp180 => 'BMP180';
+
+  @override
+  String get plot => 'Plot';
+
+  @override
+  String get dataCleared => 'Data cleared successfully';
+
+  @override
+  String get rawData => 'Raw Data';
+
+  @override
+  String get pressureUnitLabel => 'Pa';
+
+  @override
+  String get temperatureUnitLabel => '°C';
+
+  @override
+  String get altitudeUnitLabel => 'm';
+
+  @override
+  String get time => 'Time';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get distanceUnitLabel => 'mm';
 }
