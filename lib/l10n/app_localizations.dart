@@ -2403,6 +2403,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Estimated'**
   String get estimated;
+
+  /// No description provided for @distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// No description provided for @distanceUnitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'mm'**
+  String get distanceUnitLabel;
 }
 
 class _AppLocalizationsDelegate

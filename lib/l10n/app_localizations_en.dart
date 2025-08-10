@@ -1232,4 +1232,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get estimated => 'Estimated';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get distanceUnitLabel => 'mm';
 }
