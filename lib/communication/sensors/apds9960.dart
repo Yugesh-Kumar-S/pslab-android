@@ -287,9 +287,8 @@ class APDS9960 {
     bool udDominant = deltaUd.abs() > deltaLr.abs();
     if (stateUd == -1 && stateLr == 1) return udDominant ? 1 : 4;
     if (stateUd == 1 && stateLr == -1) return udDominant ? 2 : 3;
-    if (stateUd == -1) return udDominant ? 1 : 3;
-    if (stateUd == 1) return udDominant ? 2 : 3;
-
+    if (stateUd == -1 && stateLr == -1) return udDominant ? 1 : 3;
+    if (stateUd == 1 && stateLr == 1) return udDominant ? 2 : 4;
     return 0;
   }
 
