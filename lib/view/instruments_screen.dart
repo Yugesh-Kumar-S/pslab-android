@@ -57,6 +57,18 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           );
         }
         break;
+      case 3:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/sensors') {
+          Navigator.popUntil(context, ModalRoute.withName('/sensors'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/sensors',
+            (route) => route.isFirst,
+          );
+        }
+        break;
       case 5:
         if (Navigator.canPop(context) &&
             ModalRoute.of(context)?.settings.name == '/powerSource') {
@@ -117,6 +129,18 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           );
         }
         break;
+      case 11:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/thermometer') {
+          Navigator.popUntil(context, ModalRoute.withName('/thermometer'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/thermometer',
+            (route) => route.isFirst,
+          );
+        }
+        break;
       case 12:
         if (Navigator.canPop(context) &&
             ModalRoute.of(context)?.settings.name == '/roboticArm') {
@@ -141,6 +165,17 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           );
         }
         break;
+      case 4:
+        if (Navigator.canPop(context) &&
+            ModalRoute.of(context)?.settings.name == '/waveGenerator') {
+          Navigator.popUntil(context, ModalRoute.withName('/waveGenerator'));
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/waveGenerator',
+            (route) => route.isFirst,
+          );
+        }
       default:
         break;
     }
