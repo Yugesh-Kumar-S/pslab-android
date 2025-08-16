@@ -1038,6 +1038,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select the sensor by going to the Configure tab from the bottom navigation bar and choose BMP-180 in the drop down menu under Select Sensor.';
 
   @override
+  String get magnetometerError => 'Magnetometer error:';
+
+  @override
+  String get accelerometerError => 'Accelerometer error:';
+
+  @override
+  String get compassTitle => 'Compass';
+
+  @override
+  String get parallelToGround => 'Select axes parallel to ground';
+
   String get thermometerTitle => 'Thermometer';
 
   @override
