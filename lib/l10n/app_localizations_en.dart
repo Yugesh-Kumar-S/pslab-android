@@ -1253,4 +1253,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get estimated => 'Estimated';
+
+  @override
+  String get experiments => 'Experiments';
+
+  @override
+  String get startExperiment => 'Start Experiment';
+
+  @override
+  String get lightIntensityVsDistance => 'Light Intensity vs Distance';
+
+  @override
+  String get lightIntensityVsDistanceDesc =>
+      'Measure how light intensity changes with distance from the source';
+
+  @override
+  String get stepCompleted => 'Step Completed!';
+
+  @override
+  String get endExperiment => 'End Experiment';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get step => 'Step';
+
+  @override
+  String get experimentCompleted => 'Experiment Completed';
 }

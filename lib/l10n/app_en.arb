@@ -390,5 +390,15 @@
     "altitudeUnitLabel" : "m",
     "time" : "Time",
     "notAvailable" : "N/A",
-    "estimated" : "Estimated"
+    "estimated" : "Estimated",
+    "experiments" : "Experiments",
+    "startExperiment" : "Start Experiment",
+    "lightIntensityVsDistance" : "Light Intensity vs Distance",
+    "lightIntensityVsDistanceDesc" : "Measure how light intensity changes with distance from the source",
+    "stepCompleted" : "Step Completed!",
+    "endExperiment" : "End Experiment",
+    "next" : "Next",
+    "previous" : "Previous",
+    "step" : "Step",
+    "experimentCompleted" : "Experiment Completed"
 }

@@ -2439,6 +2439,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Estimated'**
   String get estimated;
+
+  /// No description provided for @experiments.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiments'**
+  String get experiments;
+
+  /// No description provided for @startExperiment.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Experiment'**
+  String get startExperiment;
+
+  /// No description provided for @lightIntensityVsDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Intensity vs Distance'**
+  String get lightIntensityVsDistance;
+
+  /// No description provided for @lightIntensityVsDistanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Measure how light intensity changes with distance from the source'**
+  String get lightIntensityVsDistanceDesc;
+
+  /// No description provided for @stepCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Step Completed!'**
+  String get stepCompleted;
+
+  /// No description provided for @endExperiment.
+  ///
+  /// In en, this message translates to:
+  /// **'End Experiment'**
+  String get endExperiment;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// No description provided for @step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get step;
+
+  /// No description provided for @experimentCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiment Completed'**
+  String get experimentCompleted;
 }
 
 class _AppLocalizationsDelegate
