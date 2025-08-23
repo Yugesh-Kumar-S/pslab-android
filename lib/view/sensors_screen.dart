@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pslab/view/bmp180_screen.dart';
+import 'package:pslab/view/ads1115_screen.dart';
 import 'package:pslab/view/widgets/common_scaffold_widget.dart';
 import '../../providers/board_state_provider.dart';
 import '../l10n/app_localizations.dart';
@@ -218,6 +219,9 @@ class _SensorsScreenState extends State<SensorsScreen> {
     Widget? targetScreen;
 
     switch (sensorName) {
+      case 'ADS1115':
+        targetScreen = const ADS1115Screen();
+        break;
       case 'BMP180':
         targetScreen = const BMP180Screen();
         break;
