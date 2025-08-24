@@ -113,7 +113,7 @@ class _APDS9960ScreenState extends State<APDS9960Screen> {
                             yAxisLabel:
                                 '${appLocalizations.light} (${appLocalizations.lux})',
                             data: provider.luxData,
-                            lineColor: apds990ChartColors[0],
+                            lineColor: apds9960ChartColors[0],
                             unit: appLocalizations.lx,
                             maxDataPoints: provider.numberOfReadings,
                             showDots: true,
@@ -124,7 +124,7 @@ class _APDS9960ScreenState extends State<APDS9960Screen> {
                                 '${appLocalizations.plot} - ${appLocalizations.proximity}',
                             yAxisLabel: appLocalizations.proximity,
                             data: provider.proximityData,
-                            lineColor: apds990ChartColors[1],
+                            lineColor: apds9960ChartColors[1],
                             unit: '',
                             maxDataPoints: provider.numberOfReadings,
                             showDots: true,
