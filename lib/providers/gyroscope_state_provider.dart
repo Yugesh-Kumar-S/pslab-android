@@ -72,7 +72,10 @@ class GyroscopeProvider extends ChangeNotifier {
   }
 
   void startPlayback(List<List<dynamic>> data) {
-    if (data.length <= 1) return;
+    if (data.length <= 1) {
+      logger.w("Playback skipped: insufficient data (length <= 1)");
+      return;
+    }
 
     _isPlayingBack = true;
     _isPlaybackPaused = false;
