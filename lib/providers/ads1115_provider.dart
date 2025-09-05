@@ -197,6 +197,9 @@ class ADS1115Provider extends ChangeNotifier {
   }
 
   void setTimegap(int timegapMs) {
+    if (_timegapMs == timegapMs) {
+      return;
+    }
     _timegapMs = timegapMs;
     if (_isRunning) {
       _stopDataCollection();
