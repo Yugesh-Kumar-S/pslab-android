@@ -1,12 +1,8 @@
 import 'package:pslab/communication/peripherals/i2c.dart';
 import 'package:pslab/communication/science_lab.dart';
 import 'package:pslab/others/logger_service.dart';
-import '../../l10n/app_localizations.dart';
-import '../../providers/locator.dart';
 
 class ADS1115 {
-  AppLocalizations appLocalizations = getIt.get();
-
   static const String tag = "ADS1115";
   static const int address = 0x48;
 
