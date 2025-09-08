@@ -2790,6 +2790,12 @@ abstract class AppLocalizations {
   /// **'Estimated'**
   String get estimated;
 
+  /// No description provided for @data.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get data;
+
   /// No description provided for @experiments.
   ///
   /// In en, this message translates to:
@@ -2951,6 +2957,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configure'**
   String get configure;
+
+  /// No description provided for @setGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Gain'**
+  String get setGain;
+
+  /// No description provided for @setChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Channel'**
+  String get setChannel;
+
+  /// No description provided for @setRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Rate'**
+  String get setRate;
+
+  /// No description provided for @millivolts.
+  ///
+  /// In en, this message translates to:
+  /// **'mV'**
+  String get millivolts;
 
   /// No description provided for @proximity.
   ///

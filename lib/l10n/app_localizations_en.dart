@@ -1446,6 +1446,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get estimated => 'Estimated';
 
   @override
+  String get data => 'Data';
+
   String get experiments => 'Experiments';
 
   @override
@@ -1532,6 +1534,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configure => 'Configure';
 
   @override
+  String get setGain => 'Set Gain';
+
+  @override
+  String get setChannel => 'Set Channel';
+
+  @override
+  String get setRate => 'Set Rate';
+
+  @override
+  String get millivolts => 'mV';
+
   String get proximity => 'Proximity';
 
   @override
