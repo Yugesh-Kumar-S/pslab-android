@@ -165,7 +165,7 @@ abstract class AppLocalizations {
   /// No description provided for @luxMeter.
   ///
   /// In en, this message translates to:
-  /// **'Lux Meter'**
+  /// **'Luxmeter'**
   String get luxMeter;
 
   /// No description provided for @accelerometer.
@@ -2463,7 +2463,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteCautionMessage.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete all logged data for this instrument?'**
+  /// **'Are you sure you want to delete all logged data?'**
   String get deleteCautionMessage;
 
   /// No description provided for @deleteAll.
@@ -3101,6 +3101,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pause Playback'**
   String get pausePlayback;
+
+  /// No description provided for @openStreetMapContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenStreetMap contributors'**
+  String get openStreetMapContributors;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @noLocationDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No location data available'**
+  String get noLocationDataAvailable;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @loggedData.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged Data'**
+  String get loggedData;
 }
 
 class _AppLocalizationsDelegate

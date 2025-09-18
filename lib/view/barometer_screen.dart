@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 import 'package:pslab/communication/peripherals/i2c.dart';
 import 'package:pslab/communication/science_lab.dart';
 import 'package:flutter/material.dart';
@@ -165,9 +166,9 @@ class _BarometerScreenState extends State<BarometerScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => LoggedDataScreen(
-          instrumentName: 'barometer',
-          appBarName: 'Barometer',
-          instrumentIcon: instrumentIcons[7], // Assuming barometer icon index
+          instrumentNames: [appLocalizations.barometer.toLowerCase()],
+          appBarName: appLocalizations.barometer,
+          instrumentIcons: [instrumentIcons[8]],
         ),
       ),
     );
@@ -192,7 +193,8 @@ class _BarometerScreenState extends State<BarometerScreen> {
       final data = _provider.stopRecording();
       await _showSaveFileDialog(data);
     } else {
-      _provider.startRecording();
+      await _provider.startRecording();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -207,7 +209,8 @@ class _BarometerScreenState extends State<BarometerScreen> {
 
   Future<void> _showSaveFileDialog(List<List<dynamic>> data) async {
     final TextEditingController filenameController = TextEditingController();
-    final String defaultFilename = '';
+    final String defaultFilename =
+        '${DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now())}.csv';
     filenameController.text = defaultFilename;
 
     final String? fileName = await showDialog<String>(
@@ -239,8 +242,9 @@ class _BarometerScreenState extends State<BarometerScreen> {
     );
 
     if (fileName != null) {
-      _csvService.writeMetaData('barometer', data);
-      final file = await _csvService.saveCsvFile('barometer', fileName, data);
+      _csvService.writeMetaData(appLocalizations.barometer.toLowerCase(), data);
+      final file = await _csvService.saveCsvFile(
+          appLocalizations.barometer.toLowerCase(), fileName, data);
       if (mounted) {
         if (file != null) {
           ScaffoldMessenger.of(context).showSnackBar(

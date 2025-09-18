@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:pslab/providers/gyroscope_config_provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:pslab/others/logger_service.dart';
 import 'package:intl/intl.dart';
@@ -48,7 +50,52 @@ class GyroscopeProvider extends ChangeNotifier {
   bool get isPlayingBack => _isPlayingBack;
   bool get isPlaybackPaused => _isPlaybackPaused;
 
+  late GyroscopeConfigProvider _configProvider;
+
+  Position? currentPosition;
+  StreamSubscription? _locationStream;
+
   Function? onPlaybackEnd;
+
+  void setConfigProvider(GyroscopeConfigProvider configProvider) {
+    _configProvider = configProvider;
+  }
+
+  GyroscopeConfigProvider? get configProvider => _configProvider;
+
+  Future<void> _startGeoLocationUpdates() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      logger.w('Location services are disabled.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        logger.w('Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      logger.w(
+          'Location permissions are permanently denied, we cannot request permissions.');
+      return;
+    }
+
+    _locationStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    ).listen((Position position) {
+      currentPosition = position;
+    });
+  }
 
   void initializeSensors() {
     if (_gyroscopeSubscription != null) return;
@@ -195,8 +242,12 @@ class GyroscopeProvider extends ChangeNotifier {
         x.toStringAsFixed(6),
         y.toStringAsFixed(6),
         z.toStringAsFixed(6),
-        0,
-        0
+        _configProvider.config.includeLocationData
+            ? currentPosition?.latitude.toString() ?? 0
+            : 0,
+        _configProvider.config.includeLocationData
+            ? currentPosition?.longitude.toString() ?? 0
+            : 0
       ]);
     }
 
@@ -233,7 +284,10 @@ class GyroscopeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startRecording() {
+  Future<void> startRecording() async {
+    if (_configProvider.config.includeLocationData) {
+      await _startGeoLocationUpdates();
+    }
     _isRecording = true;
     _recordedData = [
       [
@@ -250,6 +304,9 @@ class GyroscopeProvider extends ChangeNotifier {
   }
 
   List<List<dynamic>> stopRecording() {
+    if (_locationStream != null) {
+      _locationStream!.cancel();
+    }
     _isRecording = false;
     notifyListeners();
     return _recordedData;
@@ -322,6 +379,9 @@ class GyroscopeProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    if (_locationStream != null) {
+      _locationStream!.cancel();
+    }
     _playbackTimer?.cancel();
     disposeSensors();
     super.dispose();

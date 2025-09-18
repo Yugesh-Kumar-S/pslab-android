@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:light/light.dart';
@@ -59,6 +60,9 @@ class LuxMeterStateProvider extends ChangeNotifier {
   Function(String)? onSensorError;
   Function? onPlaybackEnd;
 
+  Position? currentPosition;
+  StreamSubscription? _locationStream;
+
   void setConfigProvider(LuxMeterConfigProvider configProvider) {
     _configProvider = configProvider;
     _configProvider?.addListener(_onConfigChanged);
@@ -66,6 +70,40 @@ class LuxMeterStateProvider extends ChangeNotifier {
   }
 
   LuxMeterConfigProvider? get configProvider => _configProvider;
+
+  Future<void> _startGeoLocationUpdates() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      logger.w('Location services are disabled.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        logger.w('Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      logger.w(
+          'Location permissions are permanently denied, we cannot request permissions.');
+      return;
+    }
+
+    _locationStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    ).listen((Position position) {
+      currentPosition = position;
+    });
+  }
 
   void _onConfigChanged() async {
     if (_configProvider == null) return;
@@ -360,6 +398,9 @@ class LuxMeterStateProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    if (_locationStream != null) {
+      _locationStream!.cancel();
+    }
     _configProvider?.removeListener(_onConfigChanged);
     _playbackTimer?.cancel();
     disposeSensors();
@@ -378,8 +419,12 @@ class LuxMeterStateProvider extends ChangeNotifier {
           now.millisecondsSinceEpoch.toString(),
           dateFormat.format(now),
           lux.toStringAsFixed(2),
-          0,
-          0
+          _configProvider!.config.includeLocationData
+              ? currentPosition?.latitude.toString() ?? 0
+              : 0,
+          _configProvider!.config.includeLocationData
+              ? currentPosition?.longitude.toString() ?? 0
+              : 0
         ]);
       }
 
@@ -421,7 +466,10 @@ class LuxMeterStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startRecording() {
+  Future<void> startRecording() async {
+    if (_configProvider!.config.includeLocationData) {
+      await _startGeoLocationUpdates();
+    }
     _isRecording = true;
     _recordedData = [
       ['Timestamp', 'DateTime', 'Readings', 'Latitude', 'Longitude']
@@ -430,6 +478,9 @@ class LuxMeterStateProvider extends ChangeNotifier {
   }
 
   List<List<dynamic>> stopRecording() {
+    if (_locationStream != null) {
+      _locationStream!.cancel();
+    }
     _isRecording = false;
     notifyListeners();
     return _recordedData;
